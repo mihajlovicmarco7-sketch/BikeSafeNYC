@@ -30,6 +30,7 @@ export const searchParkingLocationsByName = async (searchTerm) => {
 
     const locations = await parkingLocationsCollection
     .find({locationName : {$regex: searchTerm, $options: "i"}})
+    .limit(50)
     .toArray();
 
     if (!locations) throw `No locations found for search term: ${searchTerm}!`;
@@ -64,5 +65,6 @@ export const getParkingLocationsByCoordinates = async (latMin, latMax, longMin, 
       .map(location => ({
         ...location,
         distance: Math.round(validation.getDistanceBetweenCoordinates(originLat, originLong, location.latitude, location.longitude) * 69 * 100) / 100
-      }));
+      }))
+      .slice(0,50);
 };
