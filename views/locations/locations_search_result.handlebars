@@ -1,0 +1,20 @@
+<h1>Locations Results</h1>
+
+<section>
+    <h2>Results for: {{searchTerm}}</h2>
+    {{#if locations.length}}
+        <ul>
+            {{#each locations}}
+                <li><a href="/locations/{{this._id}}?backLink={{../backLink}}">{{this.locationName}}</a></li>
+            {{/each}}
+        </ul>
+    {{else}}
+        <p>0 locations found for {{searchTerm}}</p>
+    {{/if}}
+    {{#if locationsMax}}
+        <p>Displaying top 50 results. Not finding what you're looking for? Try a more specific search!</p>
+    {{/if}}
+
+</section>
+
+<a href="/locations/search">Back to search</a>
