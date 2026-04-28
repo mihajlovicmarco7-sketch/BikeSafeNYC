@@ -34,10 +34,10 @@ app.engine(
 
 app.set('view engine', 'handlebars');
 
-configRoutes(app);
-
 app.use('/', dashboardRoutes);
 app.use('/', reportsRoutes);
+
+configRoutes(app);
 
 app.listen(3000, () => {
   console.log("We've now got a server!");
