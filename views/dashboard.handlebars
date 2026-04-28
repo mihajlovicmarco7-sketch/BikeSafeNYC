@@ -1,0 +1,95 @@
+<section class="dashboard-hero">
+  <div>
+    <h1>My Dashboard</h1>
+    <p class="subtext">Manage your theft reports and favorite parking locations.</p>
+  </div>
+</section>
+
+<section class="dashboard-section">
+  <div class="section-header">
+    <h2>My Theft Reports</h2>
+    <a class="btn" href="/missing-bikes">View Missing Bikes Board</a>
+  </div>
+
+  {{#if hasReports}}
+    <div class="report-grid">
+      {{#each reports}}
+        <article class="report-card">
+          <div class="report-card-header">
+            <div>
+              <h3>{{bikeDescription}}</h3>
+              <p class="meta-line">
+                <span><strong>Location:</strong> {{locationName}}</span>
+              </p>
+            </div>
+
+            <span class="status-badge status-{{status}}">
+              {{status}}
+            </span>
+          </div>
+
+          <div class="report-card-body">
+            <p><strong>Incident Date:</strong> {{formatDate incidentDate}}</p>
+            <p><strong>Contact Email:</strong> {{contactEmail}}</p>
+
+            {{#if contactPhone}}
+              <p><strong>Contact Phone:</strong> {{contactPhone}}</p>
+            {{/if}}
+
+            {{#if notes}}
+              <p><strong>Notes:</strong> {{notes}}</p>
+            {{/if}}
+          </div>
+
+          <div class="action-row">
+            <a class="btn" href="/reports/{{_id}}/edit">Edit</a>
+
+            <form
+                method="POST"
+                action="/reports/{{_id}}/delete"
+                class="inline-form"
+                onsubmit="return confirm('Are you sure you want to delete this report?');"
+            >
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+            {{#unless (eq status "recovered")}}
+              <form method="POST" action="/reports/{{_id}}/recovered" class="inline-form">
+                <button type="submit" class="btn btn-success">Mark as Recovered</button>
+              </form>
+            {{/unless}}
+          </div>
+        </article>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="empty-state">
+      <h3>No theft reports yet</h3>
+      <p>You have not submitted any bike theft reports yet.</p>
+    </div>
+  {{/if}}
+</section>
+
+<section class="dashboard-section">
+  <div class="section-header">
+    <h2>My Favorite Locations</h2>
+    <a class="btn" href="/locations">Browse Locations</a>
+  </div>
+
+  {{#if hasFavorites}}
+    <div class="favorite-grid">
+      {{#each favorites}}
+        <article class="favorite-card">
+          <h3>{{locationName}}</h3>
+          <p>{{address}}</p>
+          <p><strong>Safety Rating:</strong> {{safetyRating}} / 10</p>
+          <a class="btn" href="/locations/{{_id}}">View Location</a>
+        </article>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="empty-state">
+      <h3>No favorites yet</h3>
+      <p>You have not added any favorite parking locations yet.</p>
+    </div>
+  {{/if}}
+</section>
