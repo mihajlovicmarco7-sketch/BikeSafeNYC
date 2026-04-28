@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>{{title}}</title>
-  <link rel="stylesheet" href="/public/css/styles.css">
-</head>
-<body>
-  <header class="site-header">
-    <nav class="nav">
-      <a href="/">Home</a>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/missing-bikes">Board of Missing Bikes</a>
-      <a href="/locations">Locations</a>
-    </nav>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/missing-bikes">Board of Missing Bikes</a>
+        <a href="/locations">Locations</a>
+      </nav>
+    </header>
 
-  <main class="page-content">
-    {{{body}}}
-  </main>
-</body>
+    <main class="page-content">
+      {{{body}}}
+    </main>
+
+    <script src="/public/js/form_validate.js"></script>
+  </body>
 </html>
