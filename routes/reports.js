@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { mockReports } from '../data/mockData.js';
+import { mockReports, mockUser } from '../data/mockData.js';
 
 const router = Router();
 
@@ -110,6 +110,48 @@ router.post('/reports/:id/recovered', async (req, res) => {
   report.updatedAt = new Date().toISOString();
 
   return res.redirect('/dashboard');
+});
+
+router.post('/reports/:id/comments', async (req, res) => {
+  const reportId = req.params.id;
+  const { commentText } = req.body;
+
+  const report = mockReports.find((r) => r._id === reportId);
+
+  if (!report) {
+    return res.status(404).render('error', {
+      title: 'Not Found',
+      message: 'Report not found.'
+    });
+  }
+
+  if (report.status !== 'missing') {
+    return res.status(400).render('error', {
+      title: 'Invalid Request',
+      message: 'Comments can only be added to active missing bike reports.'
+    });
+  }
+
+  const trimmedComment = commentText ? commentText.trim() : '';
+
+  if (!trimmedComment || trimmedComment.length < 2 || trimmedComment.length > 500) {
+    return res.status(400).render('error', {
+      title: 'Invalid Comment',
+      message: 'Comment must be between 2 and 500 characters.'
+    });
+  }
+
+  report.comments.push({
+    _id: `comment${Date.now()}`,
+    userId: mockUser._id,
+    username: mockUser.username,
+    text: trimmedComment,
+    createdAt: new Date().toISOString()
+  });
+
+  report.updatedAt = new Date().toISOString();
+
+  return res.redirect('/missing-bikes');
 });
 
 export default router;

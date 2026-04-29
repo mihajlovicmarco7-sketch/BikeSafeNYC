@@ -36,6 +36,19 @@
             {{/if}}
           </div>
 
+          <form method="POST" action="/reports/{{_id}}/comments" class="comment-form">
+            <label for="comment-{{_id}}">Add a comment</label>
+            <textarea
+              id="comment-{{_id}}"
+              name="commentText"
+              rows="3"
+              placeholder="Share a tip, possible sighting, or helpful information..."
+              required
+            ></textarea>
+            
+            <button type="submit" class="btn">Post Comment</button>
+          </form>
+
         </article>
       {{/each}}
     </div>
