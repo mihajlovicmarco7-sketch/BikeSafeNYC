@@ -48,7 +48,7 @@ export let mockReports = [
   }
 ];
 
-export const mockFavorites = [
+export let mockFavorites = [
   {
     _id: 'loc1',
     locationName: '123 Main St',

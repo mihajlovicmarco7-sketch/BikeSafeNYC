@@ -83,6 +83,18 @@
           <p>{{address}}</p>
           <p><strong>Safety Rating:</strong> {{safetyRating}} / 10</p>
           <a class="btn" href="/locations/{{_id}}">View Location</a>
+          <form
+            method="POST"
+            action="/favorites/{{_id}}/remove"
+            class="inline-form"
+            onsubmit="return confirm('Remove this location from your favorites?');"
+          >
+            <button type="submit" class="btn btn-danger">Remove Favorite</button>
+          </form>
+          
+          <form method="POST" action="/favorites/loc99/add">
+            <button class="btn">Add Test Favorite</button>
+          </form>
         </article>
       {{/each}}
     </div>
