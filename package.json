@@ -17,6 +17,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "node test.js",
+    "test_reports": "node testTheftReports.js",
     "seed": "node ./seed_data/seed.js"
   },
   "dependencies": {
