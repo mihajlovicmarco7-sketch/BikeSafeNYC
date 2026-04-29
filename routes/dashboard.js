@@ -14,4 +14,16 @@ router.get('/dashboard', async (req, res) => {
   });
 });
 
+router.get('/missing-bikes', async (req, res) => {
+  const missingReports = mockReports.filter(
+    (report) => report.status === 'missing'
+  );
+
+  return res.render('missing-bikes', {
+    title: 'Missing Bikes',
+    reports: missingReports,
+    hasReports: missingReports.length > 0
+  });
+});
+
 export default router;

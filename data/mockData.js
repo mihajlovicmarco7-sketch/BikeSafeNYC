@@ -15,7 +15,23 @@ export let mockReports = [
     contactEmail: 'john@doe.com',
     contactPhone: '(123)-456-7890',
     notes: 'Locked with chain lock, chain was broken when I returned',
-    status: 'missing'
+    status: 'missing',
+    comments: [
+      {
+        _id: 'comment1',
+        userId: 'user456',
+        username: 'marco',
+        text: 'I saw a bike like this near Union Square.',
+        createdAt: '2026-03-24T16:00:00.000Z'
+      },
+      {
+        _id: 'comment2',
+        userId: 'user789',
+        username:'eddie',
+        text: 'Check Facebook Marketplace and Craigslist.',
+        createdAt: '2026-03-24T17:30:00.000Z'
+      }
+    ]
   },
   {
     _id: 'report2',
@@ -27,7 +43,8 @@ export let mockReports = [
     contactEmail: 'john@doe.com',
     contactPhone: '',
     notes: 'Recovered two days later near Union Square',
-    status: 'recovered'
+    status: 'recovered',
+    comments: []
   }
 ];
 
