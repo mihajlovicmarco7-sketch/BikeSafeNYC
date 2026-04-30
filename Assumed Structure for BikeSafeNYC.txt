@@ -1,0 +1,23 @@
+BikeSafeNYC/
+├─ app.js
+├─ config/
+│  └─ mongoConnection.js
+├─ data/
+│  └─ users.js
+├─ middleware/
+│  └─ auth.js
+├─ routes/
+│  ├─ authRoutes.js
+│  └─ index.js
+├─ views/
+│  ├─ layouts/
+│  │  └─ main.handlebars
+│  ├─ signup.handlebars
+│  ├─ login.handlebars
+│  └─ dashboard.handlebars
+├─ public/
+│  ├─ css/
+│  │  └─ styles.css
+│  └─ js/
+│     └─ authValidation.js
+└─ package.json
