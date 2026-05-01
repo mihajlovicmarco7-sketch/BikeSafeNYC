@@ -5,6 +5,7 @@ import {ObjectId} from 'mongodb';
 // JSON files for seeding
 import legacyTheftSeedData from './seedLegacyData.json' with {type: 'json'};
 import parkingLocationData from './seedParkingLocationData.json' with {type: 'json'};
+import {theftReportsSeedData} from './seedTheftReportsData.js'
 
 const main = async () => {
     const db = await dbConnection();
@@ -12,10 +13,11 @@ const main = async () => {
 
     const legacyTheftCollection = await legacyTheftRecords();
     const parkingLocationsCollection = await parkingLocations();
+    const theftReportsCollection = await theftReports();
 
     await legacyTheftCollection.insertMany(legacyTheftSeedData);
     await parkingLocationsCollection.insertMany(parkingLocationData);
-
+    await theftReportsCollection.insertMany(theftReportsSeedData);
 
     console.log('Seeded data!!!');
 
