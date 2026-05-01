@@ -1,0 +1,29 @@
+<h1>Location search</h1>
+
+<section>
+    <h2>Search by Name</h2>
+    <form action="/locations/search" method="get" id="name-form">
+        <label for="search-term">Loction Name:</label>
+        <input type="text" id="search-term" name="searchTerm" placeholder="Grand Central">
+        <button type="submit">Search</button>
+        <p id="name-error-container" style="color:red; display:none;"></p>
+    </form>
+
+    <h2>Search by Current Location</h2>
+    <form action="/locations/find/coordinates" method="get" id="coordinates-form">
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude">
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude">
+
+        <label for="coord-distance">Distance (in miles):</label>
+        <input type="text" id="coord-distance" name="distance" placeholder=".25">
+
+        <button type="button" id="use-my-location">Use my current location</button>
+        <button type="submit">Search</button>
+        
+        <p id="coordinates-error-container" style="color:red; display:none;"></p>
+    </form>
+
+</section>

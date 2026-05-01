@@ -1,0 +1,32 @@
+<h1>{{location.locationName}}</h1>
+
+<section>
+    <h2>Location Details</h2>
+    <h3>Address</h3>
+    <p>{{location.address}}</p>
+    
+    <h3>Parking Capacity</h3>
+    <p>{{location.parkingSize}}</p>
+
+    <h3>Coordinates</h3>
+    <p>Latitude: {{location.latitude}}, Longitude: {{location.longitude}}</p>
+
+    <h2>Safety</h2>
+
+    <h3>Number of Thefts Reported by Users</h3>
+    <p>{{location.numberOfThefts}}</p>
+
+    <h3>Safety Score</h3>
+    <p>{{location.safetyRating}}</p>
+    
+
+</section>
+
+
+{{!-- {{#if searchTerm}}
+    <a href="/locations/search?searchTerm={{searchTerm}}">Back to results for "{{searchTerm}}"</a>
+{{else}}
+    <a href="/locations/search">Back to search</a>
+{{/if}} --}}
+
+<a href="{{backLink}}">Back to search results</a>

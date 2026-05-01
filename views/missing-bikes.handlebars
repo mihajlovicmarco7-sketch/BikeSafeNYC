@@ -1,0 +1,61 @@
+<section class="dashboard-hero">
+  <h1>Missing Bikes Board</h1>
+  <p class="subtext">Community reports of recently stolen bikes.</p>
+</section>
+
+<section class="dashboard-section">
+  {{#if hasReports}}
+    <div class="report-grid">
+      {{#each reports}}
+        <article class="report-card">
+          <h3>{{bikeDescription}}</h3>
+
+          <p><strong>Location:</strong> {{locationName}}</p>
+          <p><strong>Date:</strong> {{formatDate incidentDate}}</p>
+
+          {{#if notes}}
+            <p><strong>Notes:</strong> {{notes}}</p>
+          {{/if}}
+
+          <div class="comments-section">
+            <h4>Comments</h4>
+
+            {{#if comments.length}}
+              <ul class="comment-list">
+                {{#each comments}}
+                  <li class="comment">
+                    <p class="comment-text">{{text}}</p>
+                    <p class="comment-meta">
+                      — User {{username}} on {{formatDate createdAt}}
+                    </p>
+                  </li>
+                {{/each}}
+              </ul>
+            {{else}}
+              <p class="empty-comments">No comments yet.</p>
+            {{/if}}
+          </div>
+
+          <form method="POST" action="/reports/{{_id}}/comments" class="comment-form">
+            <label for="comment-{{_id}}">Add a comment</label>
+            <textarea
+              id="comment-{{_id}}"
+              name="commentText"
+              rows="3"
+              placeholder="Share a tip, possible sighting, or helpful information..."
+              required
+            ></textarea>
+            
+            <button type="submit" class="btn">Post Comment</button>
+          </form>
+
+        </article>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="empty-state">
+      <h3>No missing bikes reported</h3>
+      <p>There are currently no active missing bike reports.</p>
+    </div>
+  {{/if}}
+</section>

@@ -1,0 +1,96 @@
+<section class="dashboard-hero">
+  <div>
+    <h1>Edit Theft Report</h1>
+    <p class="subtext">Update the details of your bike theft report below.</p>
+  </div>
+</section>
+
+<section class="dashboard-section">
+  <article class="report-card">
+
+    {{#if error}}
+      <div class="error-message">
+        {{error}}
+      </div>
+    {{/if}}
+
+    <form method="POST" action="/reports/{{report._id}}/edit" class="edit-form">
+      
+      <div class="form-group">
+        <label for="bikeDescription">Bike Description</label>
+        <input
+          type="text"
+          id="bikeDescription"
+          name="bikeDescription"
+          value="{{report.bikeDescription}}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="locationName">Location</label>
+        <input
+          type="text"
+          id="locationName"
+          name="locationName"
+          value="{{report.locationName}}"
+          readonly
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="incidentDate">Incident Date</label>
+        <input
+          type="datetime-local"
+          id="incidentDate"
+          name="incidentDate"
+          value="{{formatDateTimeLocal report.incidentDate}}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="contactEmail">Contact Email</label>
+        <input
+          type="email"
+          id="contactEmail"
+          name="contactEmail"
+          value="{{report.contactEmail}}"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="contactPhone">Contact Phone</label>
+        <input
+          type="text"
+          id="contactPhone"
+          name="contactPhone"
+          value="{{report.contactPhone}}"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status" required>
+          <option value="missing" {{#if (eq report.status "missing")}}selected{{/if}}>Missing</option>
+          <option value="recovered" {{#if (eq report.status "recovered")}}selected{{/if}}>Recovered</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea
+          id="notes"
+          name="notes"
+          rows="5"
+        >{{report.notes}}</textarea>
+      </div>
+
+      <div class="action-row">
+        <button type="submit" class="btn">Save Changes</button>
+        <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </article>
+</section>
