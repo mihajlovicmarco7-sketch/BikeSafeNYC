@@ -123,8 +123,8 @@ router.post('/reports/:id/comments', async (req, res) => {
   const reportId = req.params.id;
   const commentText = req.body.commentText;
 
-  const userId = '69f4d5e9b696a915a905cb6e';
-  const userName = 'anonymous';
+  const userId = mockUser._id;
+  const userName = mockUser.username;
 
   if (req.session.member) {
       userName = req.session.member.userName;

@@ -1,5 +1,6 @@
 export const mockUser = {
-  _id: '69f4d5e9b696a915a905cb6e',
+  // taken from created _id, dumped with: > npm run test_reports
+  _id: '69f5661fe340ac2a7e0eba0b',
   username: 'anonymous'
 };
 
