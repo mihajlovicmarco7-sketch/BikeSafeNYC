@@ -41,6 +41,51 @@ async createReport(
   return data;
 },
 
+async updateReport(
+    id,  
+    bikeDescription,
+    incidentDate,
+    contactEmail,
+    contactPhone,
+    notes,
+    status) {
+
+  id = validation.checkId(id); 
+  // TODO: validate and trim
+
+  const theftReportsCollection = await theftReports();
+
+  const updateInfo = await theftReportsCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { 
+      bikeDescription: bikeDescription,
+      incidentDate: new Date(incidentDate),       
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+      notes: notes,
+      status: status,
+      updatedAt: new Date()  }
+    }
+  );
+
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw new Error(`Could not update report with id of ${id}`);
+  }
+
+  const updatedReport = await theftReportsCollection.findOne({ _id: new ObjectId(id) });
+  
+  updatedReport._id = updatedReport._id.toString();
+  updatedReport.userId = updatedReport.userId.toString();
+  updatedReport.locationId = updatedReport.locationId.toString();
+
+  updatedReport.comments.forEach(comment => {
+    comment._id = comment._id.toString();
+    comment.userId = comment.userId.toString();
+  });
+  
+  return updatedReport;
+},
+
 async getAllTheftReports(){
   const theftReportsCollection = await theftReports();
   const data = await theftReportsCollection.find({}).toArray();
@@ -158,7 +203,7 @@ async deleteReport(id){
   });
 
   if (!data) {
-    throw `Could not report with ID of ${id}`;
+    throw `Could not delete report with ID of ${id}`;
   }
 
   return {id: id, deleted: true};
@@ -187,7 +232,43 @@ async getReportsByUser(userId){
   });    
   
   return userReports;
-}
+},
+
+async addComment(
+    id,
+    userId,
+    username,
+    text) {
+
+    id = validation.checkId(id); 
+    userId = validation.checkId(userId); 
+  // TODO: validate and trim
+
+  const theftReportsCollection = await theftReports();
+
+  
+  let newComment = {
+    _id: new ObjectId(),
+    userId: new ObjectId(userId),
+    username: username,
+    text: text,
+    createdAt: new Date()
+  };
+  
+  const updateInfo = await theftReportsCollection.updateOne(
+    {_id: new ObjectId(id)}, 
+    {
+      $push: {comments: newComment}
+    }
+  );
+  
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw new Error(`Could not update report with id of ${id}`);
+  }
+
+  return await this.getTheftReportsById(id);
+  
+},
 
 };
 

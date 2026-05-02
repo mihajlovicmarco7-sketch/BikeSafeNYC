@@ -24,6 +24,32 @@ export const getParkingLocationById = async (id) => {
 
 };
 
+export const updateSafetyRating = async (id, value) => {
+    try{
+      id = validation.checkId(id);
+      value = validation.checkNumeric(value, 'safetyRating');
+    }catch (e){
+      throw new Error(e);
+    }
+
+    const parkingLocationsCollection = await parkingLocations();
+    const locations = await parkingLocationsCollection.findOne({_id: new ObjectId(id)});
+
+    if (!locations) throw `Parking location ${id} not found!`;
+    const newRating = locations.safetyRating + value;
+    
+    const updateInfo = await parkingLocationsCollection.updateOne(
+    { _id: locations._id },
+    { $set: { safetyRating: newRating} }
+  );
+  
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw new Error(`Could not update safety rating, id of ${id}`);
+  }
+
+  return getParkingLocationById(id);
+
+};
 
 export const searchParkingLocationsByName = async (searchTerm) => {
     const parkingLocationsCollection = await parkingLocations();
