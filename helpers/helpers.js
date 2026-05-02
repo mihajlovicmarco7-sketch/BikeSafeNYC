@@ -22,6 +22,20 @@ const helpers = {
     const minutes = pad(date.getMinutes());
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
+  },
+
+  safetyLetter: (rating) => {
+    if (rating < 5) return 'A';
+    if (rating < 10) return 'B';
+    if (rating < 20) return 'C';
+    return 'F';
+  },
+  
+  safetyClass: (rating) => {
+    if (rating < 5) return 'safety-a';
+    if (rating < 10) return 'safety-b';
+    if (rating < 20) return 'safety-c';
+    return 'safety-d';
   }
 };
 
