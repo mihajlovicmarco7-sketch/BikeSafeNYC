@@ -24,8 +24,21 @@
 
     <h3>Safety Score</h3>
     <p><span class="{{safetyClass location.safetyRating}}" style="font-size: 60px">{{safetyLetter location.safetyRating}}</span></p>
-    
 
+{{!-- {{#if searchTerm}}
+    <a href="/locations/search?searchTerm={{searchTerm}}">Back to results for "{{searchTerm}}"</a>
+{{else}}
+    <a href="/locations/search">Back to search</a>
+{{/if}} --}}
+<section>
+    <form method="POST" action="/theftReports/{{location._id}}" class="location-form">
+        <input type="hidden" name="locationName" value="{{location.locationName}}">
+        <input type="hidden" name="address" value="{{location.address}}">
+
+        <div class="action-row">
+        <button type="submit" class="btn">Create theft report</button>
+        <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
 </section>
-
 <a href="{{backLink}}">Back to search results</a>

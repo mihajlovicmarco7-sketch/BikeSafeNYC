@@ -1,7 +1,7 @@
 export const mockUser = {
-  _id: 'user123',
-  firstName: 'Nick',
-  username: 'nickp'
+  // taken from created _id, dumped with: > npm run test_reports
+  _id: '69f5661fe340ac2a7e0eba0b',
+  username: 'anonymous'
 };
 
 export let mockReports = [
