@@ -4,6 +4,12 @@
     <h2>Location Details</h2>
     <h3>Address</h3>
     <p>{{location.address}}</p>
+
+    <h3>Borough</h3>
+    <p>{{location.borough}}</p>
+    
+    <h3>Neighborhood</h3>
+    <p>{{location.neighborhood}}</p>
     
     <h3>Parking Capacity</h3>
     <p>{{location.parkingSize}}</p>
@@ -17,9 +23,7 @@
     <p>{{location.numberOfThefts}}</p>
 
     <h3>Safety Score</h3>
-    <p>{{location.safetyRating}}</p>
-</section>
-
+    <p><span class="{{safetyClass location.safetyRating}}" style="font-size: 60px">{{safetyLetter location.safetyRating}}</span></p>
 
 {{!-- {{#if searchTerm}}
     <a href="/locations/search?searchTerm={{searchTerm}}">Back to results for "{{searchTerm}}"</a>

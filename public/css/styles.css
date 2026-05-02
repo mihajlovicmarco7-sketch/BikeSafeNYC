@@ -264,3 +264,23 @@ body {
   font: inherit;
   resize: vertical;
 }
+
+.safety-a {
+  color:green;
+  text-shadow: 0 0 2px black;
+}
+
+.safety-b {
+  color:yellow;
+  text-shadow: 0 0 2px black;
+}
+
+.safety-c {
+  color:orange;
+  text-shadow: 0 0 2px black;
+}
+
+.safety-f {
+  color:red;
+  text-shadow: 0 0 2px black;
+}
