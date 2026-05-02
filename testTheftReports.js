@@ -1,7 +1,7 @@
 import {theftReportsData} from './data/index.js';
 import { ObjectId } from 'mongodb';
 import {closeConnection} from './config/mongoConnection.js';
-import {getAllParkingLocations} from './data/locations.js';
+import {getAllParkingLocations, getParkingLocationById, updateSafetyRating} from './data/locations.js';
 
 async function main(){
 
@@ -136,12 +136,49 @@ async function main(){
         console.log(e);
     }
 
+/*
     console.log("---------------------------------------");
     console.log("deleteReport");
     console.log("---------------------------------------");
 
     try {
         result = await theftReportsData.deleteReport(id);
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+*/
+    console.log("---------------------------------------");
+    console.log("getAllParkingLocations");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getAllParkingLocations()
+        result[0]._id = result[0]._id.toString();
+        console.dir(result[0], {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("getParkingLocationById");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getParkingLocationById('69f54125ddea28fe322a172f');
+        result._id = result._id.toString();
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("updateSafetyRating");
+    console.log("---------------------------------------");
+
+    try {
+        result = await updateSafetyRating('69f54125ddea28fe322a172f', 0.5);
+        result._id = result._id.toString();
         console.dir(result, {depth: null});
     } catch (e) {
         console.log(e);

@@ -17,6 +17,21 @@ const exportedMethods = {
         return id;
     },
 
+    checkString(value, name) {
+        if (!value) throw `You must provide a ${name}`;
+        if (typeof value !== 'string') throw `${name} must be a string`;
+        value = value.trim();
+        
+        return value;  
+    },
+
+    checkNumeric(value, name) {
+        if (!value) throw `You must provide a ${name}`;
+        if (isNaN(parseFloat(value)) || !isFinite(value)) throw `${name} must be a number`;
+        
+        return value;  
+    },
+
     getBoundingCoordinatesForDistance(latitude, longitude, distance){
         // Distance input is in miles
 

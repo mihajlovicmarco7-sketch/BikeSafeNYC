@@ -2,6 +2,7 @@ import { Router } from 'express';
 const router = Router();
 
 import {theftReportsData} from '../data/index.js';
+import {updateSafetyRating} from '../data/locations.js';
 
 router
   .route('/')
@@ -42,11 +43,12 @@ router
         notes
       );
 
-      if (result) {
-        return res.redirect('/dashboard'); 
-      } else {
+      if (!result) {
         return res.status(500).render('theftReports', { error: "Internal Server Error" });
-      }
+      } 
+      
+      await updateSafetyRating(locationId, 0.5);
+      return res.redirect('/dashboard'); 
 
     } catch (e) {
       return res.status(400).render('theftReports', { 
