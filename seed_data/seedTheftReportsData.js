@@ -149,6 +149,9 @@ import {ObjectId} from 'mongodb';
             status: "missing",
             createdAt: new Date("2026-04-03T10:30:00.000Z"),
             updatedAt: new Date("2026-04-03T10:30:00.000Z"),
-            comments: [{ _id: new ObjectId(), userId: new ObjectId(), username: "neighbor", text: "Saw a truck loading bikes nearby", createdAt: new Date() }]
+            comments: [
+                { _id: new ObjectId(), userId: new ObjectId(), username: "neighbor", text: "Saw a truck loading bikes nearby!!!", createdAt: new Date() },
+                { _id: new ObjectId(), userId: new ObjectId(), username: "marco", text: "second comment!!!", createdAt: new Date() }
+            ]
         }
     ];

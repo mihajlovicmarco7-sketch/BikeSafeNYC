@@ -1,23 +1,26 @@
 import { Router } from 'express';
-import { mockUser, mockReports, mockFavorites } from '../data/mockData.js';
+import { mockUser,  mockFavorites } from '../data/mockData.js';
+import {theftReportsData} from '../data/index.js';
 
 const router = Router();
 
 router.get('/dashboard', async (req, res) => {
+  
+  const reports = await theftReportsData.getReportsByUser(mockUser._id);
+
   return res.render('dashboard', {
     title: 'My Dashboard',
     user: mockUser,
-    reports: mockReports,
+    reports: reports,
     favorites: mockFavorites,
-    hasReports: mockReports.length > 0,
+    hasReports: reports.length > 0,
     hasFavorites: mockFavorites.length > 0
   });
 });
 
 router.get('/missing-bikes', async (req, res) => {
-  const missingReports = mockReports.filter(
-    (report) => report.status === 'missing'
-  );
+  
+  const missingReports = await theftReportsData.getMissingReports();
 
   return res.render('missing-bikes', {
     title: 'Missing Bikes',
