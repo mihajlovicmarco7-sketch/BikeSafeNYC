@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{title}}</title>
-  <link rel="stylesheet" href="/public/css/styles.css">
-</head>
-<body>
-  <header>
-    <nav>
-      <a href="/">BikeSafe NYC</a>
-      {{#if currentUser}}
-        <a href="/dashboard">Dashboard</a>
-        <a href="/logout">Logout</a>
-      {{else}}
-        <a href="/login">Login</a>
-        <a href="/signup">Sign Up</a>
-      {{/if}}
-    </nav>
-  </header>
-  <main>
-    {{{body}}}
-  </main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a href="/">Home</a>
+
+        {{#if currentUser}}
+          <a href="/dashboard">Dashboard</a>
+          <a href="/missing-bikes">Missing Bikes</a>
+          <a href="/locations">Locations</a>
+          <a href="/logout">Logout</a>
+        {{else}}
+          <a href="/login">Login</a>
+          <a href="/signup">Sign Up</a>
+        {{/if}}
+      </nav>
+    </header>
+
+    <main class="page-content">
+      {{{body}}}
+    </main>
+
+    <script src="/public/js/form_validate.js"></script>
+  </body>
 </html>
