@@ -6,11 +6,11 @@ const router = Router();
 
 router.get('/dashboard', async (req, res) => {
   
-  const reports = await theftReportsData.getReportsByUser(mockUser._id);
+  const reports = await theftReportsData.getReportsByUser(req.session.user._id);
 
   return res.render('dashboard', {
     title: 'My Dashboard',
-    user: mockUser,
+    user: req.session.user,
     reports: reports,
     favorites: mockFavorites,
     hasReports: reports.length > 0,

@@ -38,6 +38,14 @@ app.use('/theftReports', (req, res, next) => {
     next();
 });
 
+app.use('/dashboard', (req, res, next) => {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+
+    next();
+});
+
 app.set('view engine', 'handlebars');
 
 
