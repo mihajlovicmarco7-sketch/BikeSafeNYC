@@ -2,8 +2,20 @@ import { Router } from 'express';
 import { mockReports, mockUser } from '../data/mockData.js';
 
 const router = Router();
-//  MAIN ROUTE (WAS MISSING)
+
+// 🔥 NEW: helper validation functions
+const isValidEmail = (email) => {
+  return typeof email === 'string' && email.includes('@') && email.includes('.');
+};
+
+const isValidDate = (date) => {
+  return !isNaN(Date.parse(date));
+};
+
+// 🔥 MAIN ROUTE
 router.get('/', async (req, res) => {
+  console.log("Reports route loaded"); // visible change
+
   const missingReports = mockReports.filter(
     (r) => r.status === 'missing'
   );
@@ -13,9 +25,9 @@ router.get('/', async (req, res) => {
     reports: missingReports,
     hasReports: missingReports.length > 0
   });
-}); 
+});
 
-//  EDITS PAGE
+// 🔥 EDIT PAGE
 router.get('/:id/edit', async (req, res) => {
   const reportId = req.params.id;
   const report = mockReports.find((r) => r._id === reportId);
@@ -33,7 +45,7 @@ router.get('/:id/edit', async (req, res) => {
   });
 });
 
-//  EDITS SUBMIT
+// 🔥 EDIT SUBMIT
 router.post('/:id/edit', async (req, res) => {
   const reportId = req.params.id;
   const report = mockReports.find((r) => r._id === reportId);
@@ -54,22 +66,32 @@ router.post('/:id/edit', async (req, res) => {
     status
   } = req.body;
 
+  // 🔥 IMPROVED VALIDATION
   if (!bikeDescription || !incidentDate || !contactEmail || !status) {
     return res.status(400).render('reports/edit', {
       title: 'Edit Report',
-      report: {
-        ...report,
-        bikeDescription,
-        incidentDate,
-        contactEmail,
-        contactPhone,
-        notes,
-        status
-      },
-      error: 'Bike description, incident date, contact email, and status are required.'
+      report: { ...report, ...req.body },
+      error: 'All required fields must be filled.'
     });
   }
 
+  if (!isValidEmail(contactEmail)) {
+    return res.status(400).render('reports/edit', {
+      title: 'Edit Report',
+      report: { ...report, ...req.body },
+      error: 'Invalid email format.'
+    });
+  }
+
+  if (!isValidDate(incidentDate)) {
+    return res.status(400).render('reports/edit', {
+      title: 'Edit Report',
+      report: { ...report, ...req.body },
+      error: 'Invalid date format.'
+    });
+  }
+
+  // 🔥 CLEAN DATA
   report.bikeDescription = bikeDescription.trim();
   report.incidentDate = incidentDate;
   report.contactEmail = contactEmail.trim();
@@ -78,10 +100,12 @@ router.post('/:id/edit', async (req, res) => {
   report.status = status;
   report.updatedAt = new Date().toISOString();
 
+  console.log(`Report ${reportId} updated`);
+
   return res.redirect('/dashboard');
 });
 
-//  DELETES
+// 🔥 DELETE
 router.post('/:id/delete', async (req, res) => {
   const reportId = req.params.id;
   const index = mockReports.findIndex((r) => r._id === reportId);
@@ -94,10 +118,12 @@ router.post('/:id/delete', async (req, res) => {
   }
 
   mockReports.splice(index, 1);
+  console.log(`Report ${reportId} deleted`);
+
   return res.redirect('/dashboard');
 });
 
-//  MARK RECOVERED IT
+// 🔥 MARK RECOVERED
 router.post('/:id/recovered', async (req, res) => {
   const reportId = req.params.id;
   const report = mockReports.find((r) => r._id === reportId);
@@ -112,10 +138,12 @@ router.post('/:id/recovered', async (req, res) => {
   report.status = 'recovered';
   report.updatedAt = new Date().toISOString();
 
+  console.log(`Report ${reportId} marked as recovered`);
+
   return res.redirect('/dashboard');
 });
 
-//  COMMENTS ADDED
+// 🔥 COMMENTS
 router.post('/:id/comments', async (req, res) => {
   const reportId = req.params.id;
   const { commentText } = req.body;
@@ -148,7 +176,8 @@ router.post('/:id/comments', async (req, res) => {
 
   report.updatedAt = new Date().toISOString();
 
-  //  FIXED THE redirect
+  console.log(`Comment added to report ${reportId}`);
+
   return res.redirect('/reports');
 });
 
