@@ -1,3 +1,4 @@
+import validation from '../helpers.js'
 import { Router } from 'express';
 const router = Router();
 
@@ -24,13 +25,27 @@ router
         notes 
     } = req.body;
 
-    const userId = '69f4d5e9b696a915a905cb6e';
-    if (req.session.member) {
-        userName = req.session.member.userName;
-        // TODO: find userid by name
-    }      
+    let userId = req.session.user._id;
 
     try {
+      // validate inputs
+      userId = validation.checkId(userId);
+      locationId = validation.checkId(locationId);
+      locationName = validation.checkString(locationName, 'locationName');
+      incidentDate = validation.checkIncidentDate(incidentDate);
+      
+      bikeDescription = validation.checkString(bikeDescription, 'bikeDescription');
+      if (bikeDescription.length > 500) {
+        bikeDescription = bikeDescription.substring(0, 500);
+      }
+      
+      contactEmail = validation.checkEmail(contactEmail, 'contactEmail');
+      contactPhone = validation.checkString(contactPhone, 'contactPhone');
+      
+      notes = validation.checkNotes(notes);
+      if (notes.length > 500) {
+        notes = notes.substring(0, 500);
+      }
 
       const result = await theftReportsData.createReport(
         userId,

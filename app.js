@@ -4,9 +4,6 @@ import session from 'express-session';
 import exphbs from 'express-handlebars';
 
 import configRoutes from './routes/index.js';
-import dashboardRoutes from './routes/dashboard.js';
-import reportsRoutes from './routes/reports.js';
-import favoritesRoutes from './routes/favorites.js'
 import helpers from './helpers/helpers.js';
 
 const app = express();
@@ -33,11 +30,24 @@ app.engine(
   })
 );
 
+app.use('/theftReports', (req, res, next) => {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+
+    next();
+});
+
+app.use('/dashboard', (req, res, next) => {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+
+    next();
+});
+
 app.set('view engine', 'handlebars');
 
-app.use('/', dashboardRoutes);
-app.use('/', reportsRoutes);
-app.use('/', favoritesRoutes);
 
 configRoutes(app);
 

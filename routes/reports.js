@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { mockUser } from '../data/mockData.js';
 import {theftReportsData} from '../data/index.js';
 
 const router = Router();
 
-router.get('/reports/:id/edit', async (req, res) => {
+router.get('/:id/edit', async (req, res) => {
   const reportId = req.params.id;
   
   try {
@@ -22,7 +21,7 @@ router.get('/reports/:id/edit', async (req, res) => {
 
 });
 
-router.post('/reports/:id/edit', async (req, res) => {
+router.post('/:id/edit', async (req, res) => {
   try {
     const reportId = req.params.id;
     const report = await theftReportsData.getTheftReportsById(reportId);
@@ -86,7 +85,7 @@ router.post('/reports/:id/edit', async (req, res) => {
   }
 });
 
-router.post('/reports/:id/delete', async (req, res) => {
+router.post('/:id/delete', async (req, res) => {
   const reportId = req.params.id;
 
     try {
@@ -103,7 +102,7 @@ router.post('/reports/:id/delete', async (req, res) => {
 
 });
 
-router.post('/reports/:id/recovered', async (req, res) => {
+router.post('/:id/recovered', async (req, res) => {
   const reportId = req.params.id;
 
   try {
@@ -119,16 +118,19 @@ router.post('/reports/:id/recovered', async (req, res) => {
   }
 });
 
-router.post('/reports/:id/comments', async (req, res) => {
+router.post('/:id/comments', async (req, res) => {
   const reportId = req.params.id;
   const commentText = req.body.commentText;
 
-  const userId = mockUser._id;
-  const userName = mockUser.username;
-
-  if (req.session.member) {
-      userName = req.session.member.userName;
+  if (!req.session.user) {
+      return res.status(404).render('error', {
+      title: 'Comment Post Error',
+      message: "Sign in to post"
+    });
   }      
+
+  let userId = req.session.user._id;
+  let userName = req.session.user.username;
 
   try {
     const report = await theftReportsData.getTheftReportsById(reportId);
