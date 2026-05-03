@@ -13,13 +13,29 @@ async createReport(
     contactPhone,
     notes) {
   
-  // TODO: validation
+  userId = validation.checkId(userId);
+  locationId = validation.checkId(locationId);
+  locationName = validation.checkString(locationName, 'locationName');
+  incidentDate = validation.checkIncidentDate(incidentDate);
+  
+  bikeDescription = validation.checkString(bikeDescription, 'bikeDescription');
+  if (bikeDescription.length > 500) {
+    bikeDescription = bikeDescription.substring(0, 500);
+  }
+  
+  contactEmail = validation.checkEmail(contactEmail, 'contactEmail');
+  contactPhone = validation.checkString(contactPhone, 'contactPhone');
+  
+  notes = validation.checkNotes(notes);
+  if (notes.length > 500) {
+    notes = notes.substring(0, 500);
+  }
 
   let newReport = {
     userId: new ObjectId(userId),
     locationId: new ObjectId(locationId),
     locationName: locationName,
-    incidentDate: new Date(incidentDate),
+    incidentDate: new Date(incidentDate.replace(/-/g, '/')),
     bikeDescription: bikeDescription,
     contactEmail: contactEmail,
     contactPhone: contactPhone,
@@ -168,7 +184,10 @@ async updateReportStatus(id, newStatus){
   id = validation.checkId(id);
   if (!newStatus) throw new Error('status is required');
   if (typeof newStatus !== 'string') throw new Error('Status must be a string');
-
+  if (newStatus !== 'missing' && newStatus !== 'recovered') {
+    throw new Error("Invalid status");
+  }
+  
   const theftReportsCollection = await theftReports();
 
   const updateInfo = await theftReportsCollection.updateOne(

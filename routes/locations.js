@@ -11,7 +11,10 @@ router
             const locations = await getAllParkingLocations(req.params.id);
             return res.render('locations/locations_search', { locations });
         } catch (e) {
-            return res.status(500).render('error', { error: e });
+            return res.status(500).render('error', {
+            title: 'Not Found',
+            message: e
+            });
         }
     });
 
@@ -51,7 +54,10 @@ router
                 locationsMax,
                 backLink: encodeURIComponent(backLink)});
         } catch (e) {
-            return res.status(404).json({error: e});
+            return res.status(404).render('error', {
+            title: 'Not Found',
+            message: e
+            });
         }
     });
 
@@ -77,7 +83,10 @@ router
             const locations = await getParkingLocationsByCoordinates(latMin, latMax, longMin, longMax, latitude, longitude);
             return res.json(locations);
         } catch (e) {
-            return res.status(404).json({error: e});
+            return res.status(404).render('error', {
+            title: 'Not Found',
+            message: e
+            });
         }
     });
 router
@@ -110,7 +119,11 @@ router
              });
         } catch (e) {
             console.log(e);
-            return res.status(404).json({error: e});
+            return res.status(404).render('error', {
+            title: 'Not Found',
+            message: e
+            });
+
         }
     });
 
@@ -125,7 +138,10 @@ router
                 searchTerm:req.query.searchTerm,
                 backLink: req.query.backLink ? decodeURIComponent(req.query.backLink) : '/locations/search'});
         } catch (e) {
-            return res.status(404).json({error: e});
+            return res.status(404).render('error', {
+            title: 'Not Found',
+            message: e
+            });
         }
     });
 
