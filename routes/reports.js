@@ -3,7 +3,21 @@ import { mockReports, mockUser } from '../data/mockData.js';
 
 const router = Router();
 
-router.get('/reports/:id/edit', async (req, res) => {
+//  MAIN ROUTE (WAS MISSING)
+router.get('/', async (req, res) => {
+  const missingReports = mockReports.filter(
+    (r) => r.status === 'missing'
+  );
+
+  return res.render('missing-bikes', {
+    title: 'Missing Bikes Board',
+    reports: missingReports,
+    hasReports: missingReports.length > 0
+  });
+}); 
+
+//  EDITS PAGE
+router.get('/:id/edit', async (req, res) => {
   const reportId = req.params.id;
   const report = mockReports.find((r) => r._id === reportId);
 
@@ -20,9 +34,9 @@ router.get('/reports/:id/edit', async (req, res) => {
   });
 });
 
-router.post('/reports/:id/edit', async (req, res) => {
+//  EDITS SUBMIT
+router.post('/:id/edit', async (req, res) => {
   const reportId = req.params.id;
-
   const report = mockReports.find((r) => r._id === reportId);
 
   if (!report) {
@@ -41,7 +55,6 @@ router.post('/reports/:id/edit', async (req, res) => {
     status
   } = req.body;
 
-  // Basic temporary validation
   if (!bikeDescription || !incidentDate || !contactEmail || !status) {
     return res.status(400).render('reports/edit', {
       title: 'Edit Report',
@@ -58,14 +71,6 @@ router.post('/reports/:id/edit', async (req, res) => {
     });
   }
 
-  if (status !== 'missing' && status !== 'recovered') {
-    return res.status(400).render('reports/edit', {
-      title: 'Edit Report',
-      report,
-      error: 'Status must be either missing or recovered.'
-    });
-  }
-
   report.bikeDescription = bikeDescription.trim();
   report.incidentDate = incidentDate;
   report.contactEmail = contactEmail.trim();
@@ -77,26 +82,25 @@ router.post('/reports/:id/edit', async (req, res) => {
   return res.redirect('/dashboard');
 });
 
-router.post('/reports/:id/delete', async (req, res) => {
+//  DELETES
+router.post('/:id/delete', async (req, res) => {
   const reportId = req.params.id;
+  const index = mockReports.findIndex((r) => r._id === reportId);
 
-  const reportIndex = mockReports.findIndex((r) => r._id === reportId);
-
-  if (reportIndex === -1) {
+  if (index === -1) {
     return res.status(404).render('error', {
       title: 'Not Found',
       message: 'Report not found.'
     });
   }
 
-  mockReports.splice(reportIndex, 1);
-
+  mockReports.splice(index, 1);
   return res.redirect('/dashboard');
 });
 
-router.post('/reports/:id/recovered', async (req, res) => {
+//  MARK RECOVERED IT
+router.post('/:id/recovered', async (req, res) => {
   const reportId = req.params.id;
-
   const report = mockReports.find((r) => r._id === reportId);
 
   if (!report) {
@@ -112,7 +116,8 @@ router.post('/reports/:id/recovered', async (req, res) => {
   return res.redirect('/dashboard');
 });
 
-router.post('/reports/:id/comments', async (req, res) => {
+//  COMMENTS ADDED
+router.post('/:id/comments', async (req, res) => {
   const reportId = req.params.id;
   const { commentText } = req.body;
 
@@ -125,16 +130,9 @@ router.post('/reports/:id/comments', async (req, res) => {
     });
   }
 
-  if (report.status !== 'missing') {
-    return res.status(400).render('error', {
-      title: 'Invalid Request',
-      message: 'Comments can only be added to active missing bike reports.'
-    });
-  }
+  const trimmed = commentText ? commentText.trim() : '';
 
-  const trimmedComment = commentText ? commentText.trim() : '';
-
-  if (!trimmedComment || trimmedComment.length < 2 || trimmedComment.length > 500) {
+  if (!trimmed || trimmed.length < 2 || trimmed.length > 500) {
     return res.status(400).render('error', {
       title: 'Invalid Comment',
       message: 'Comment must be between 2 and 500 characters.'
@@ -145,13 +143,14 @@ router.post('/reports/:id/comments', async (req, res) => {
     _id: `comment${Date.now()}`,
     userId: mockUser._id,
     username: mockUser.username,
-    text: trimmedComment,
+    text: trimmed,
     createdAt: new Date().toISOString()
   });
 
   report.updatedAt = new Date().toISOString();
 
-  return res.redirect('/missing-bikes');
+  //  FIXED THE redirect
+  return res.redirect('/reports');
 });
 
 export default router;
