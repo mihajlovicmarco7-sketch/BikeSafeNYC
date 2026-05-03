@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { mockReports, mockUser } from '../data/mockData.js';
 
 const router = Router();
-
 //  MAIN ROUTE (WAS MISSING)
 router.get('/', async (req, res) => {
   const missingReports = mockReports.filter(
