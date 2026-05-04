@@ -17,7 +17,7 @@
     <form id="theft-report-form" name="theft-report-form" action="/theftReports" method="POST"  class="edit-form">
         <div class="form-group">
             <label for="locationName">Location Name:</label>
-            <input type="text" name="locationName" value="{{locationName}}" readonly>
+            <input type="text" name="locationName" id="locationName" value="{{locationName}}" readonly>
             <input type="text" name="locationId" value="{{locationId}}" hidden>
         </div>
         <div class="form-group">
@@ -49,6 +49,9 @@
             <a href="/dashboard" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
+
+    <p id="error-container" style="color:red; display:none;"></p>
+
   </article>
 </section>
 

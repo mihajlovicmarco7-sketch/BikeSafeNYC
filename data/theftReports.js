@@ -83,8 +83,6 @@ async updateReport(
   }
   status = validation.checkStatus(status);
 
-  // TODO: validate and trim
-
   const theftReportsCollection = await theftReports();
 
   const updateInfo = await theftReportsCollection.updateOne(

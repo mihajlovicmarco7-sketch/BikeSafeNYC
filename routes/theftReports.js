@@ -10,7 +10,7 @@ router
   .get(async (req, res) => {
       res.render('theftReports', { title: 'Report Stolen Bike' });
     }
-  })
+  )
   
   .post(async (req, res) => {
     let { 
