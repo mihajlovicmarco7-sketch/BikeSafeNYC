@@ -1,0 +1,10 @@
+<h1>BikeSafe NYC</h1>
+<p>Find safe bike parking across New York City.</p>
+{{#if currentUser}}
+  <p>Welcome back! Go to your <a href="/dashboard">Dashboard</a></p>
+{{else}}
+  <p>
+    <a href="/login">Login</a> or
+    <a href="/signup">Sign Up</a>
+  </p>
+{{/if}}
