@@ -8,12 +8,10 @@ import {updateSafetyRating} from '../data/locations.js';
 router
   .route('/')
   .get(async (req, res) => {
-    try {
-      res.render('theftReports', { title: 'Report Stolen Bike', hasLocation: false });
-    } catch (e) {
-      res.status(500).json({ error: e });
+      res.render('theftReports', { title: 'Report Stolen Bike' });
     }
-  })
+  )
+  
   .post(async (req, res) => {
     let { 
         locationId, 
@@ -28,7 +26,6 @@ router
     let userId = req.session.user._id;
 
     try {
-      // validate inputs
       userId = validation.checkId(userId);
       locationId = validation.checkId(locationId);
       locationName = validation.checkString(locationName, 'locationName');
@@ -67,8 +64,9 @@ router
 
     } catch (e) {
       return res.status(400).render('theftReports', { 
-        error: e, 
-        formData: req.body 
+        title: 'Report Stolen Bike',
+        error: e,
+        ...req.body
       });
     }
   });
@@ -76,15 +74,27 @@ router
 router
     .route("/:locationId")
   .post(async (req, res) => {
-    const locationId = req.params.locationId;
-    const locationName = req.body.locationName;
-    const address = req.body.address;
+    let locationId = req.params.locationId;
+    let locationName = req.body.locationName;
+    let address = req.body.address;
 
-    return res.render('theftReports', 
-      { title: 'Report Stolen Bike', 
-        locationId: locationId, 
-        locationName: locationName,
-        address: address });
+    try {
+      locationId = validation.checkId(locationId);
+      locationName = validation.checkString(locationName, 'locationName');
+      address = validation.checkString(address, 'address');
+
+      return res.render('theftReports', 
+        { title: 'Report Stolen Bike', 
+          locationId: locationId, 
+          locationName: locationName,
+          address: address });
+
+    } catch (e) {
+      return res.status(400).render('theftReports', { 
+        title: 'Report Stolen Bike',
+        error: e
+      });
+    }
 
   });
 

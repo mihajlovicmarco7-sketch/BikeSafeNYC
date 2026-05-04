@@ -34,7 +34,8 @@ const exportedMethods = {
         if (typeof date !== 'string') throw 'Incident date must be a string';
         date = date.trim();
         if (date.length === 0) throw 'Incident date cannot be an empty string or just spaces';
-        if (!/^[0-9\-]+$/.test(date)) throw 'Incident date are not digits';
+        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(date) &&
+            !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw 'Incident date are not digits';
         
         let localDate = date.replace(/-/g, '/');
         const incidentDate = new Date(localDate);
@@ -58,6 +59,16 @@ const exportedMethods = {
         if (typeof value !== 'string') throw `${name} must be a string`;
         value = value.trim();
         return value;  
+    },
+
+    checkStatus(value) {
+        if (!value) throw new Error('status is required');
+        if (typeof value !== 'string') throw new Error('Status must be a string');
+        value = value.trim();
+        if (value !== 'missing' && value !== 'recovered') {
+            throw new Error("Invalid status");
+        }
+        return value;
     },
 
     getBoundingCoordinatesForDistance(latitude, longitude, distance){

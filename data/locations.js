@@ -40,7 +40,7 @@ export const updateSafetyRating = async (id, value) => {
     
     const updateInfo = await parkingLocationsCollection.updateOne(
     { _id: locations._id },
-    { $set: { safetyRating: newRating} }
+    { $set: { safetyRating: newRating, safetyRatingLastCalculated: new Date()} }
   );
   
   if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {

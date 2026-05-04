@@ -31,9 +31,7 @@ router.get('/missing-bikes', async (req, res) => {
 });
 
 router.get('/login', async (req, res) => {
-  req.session.user = { _id: mockUser._id,
-                      username: mockUser.username};
-
+  req.session.user = { _id: mockUser._id, username: mockUser.username};
   console.log(`logged in as ${req.session.user.username}`)                      
   return res.redirect('/dashboard');                     
 });

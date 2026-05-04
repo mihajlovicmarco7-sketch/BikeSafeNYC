@@ -5,10 +5,6 @@
   </div>
 </section>
 
-{{#if error}}
-    <p class="error">{{error}}</p>
-{{/if}}
-
 {{#if locationId}}
     <article class="report-card">
 
@@ -21,7 +17,7 @@
     <form id="theft-report-form" name="theft-report-form" action="/theftReports" method="POST"  class="edit-form">
         <div class="form-group">
             <label for="locationName">Location Name:</label>
-            <input type="text" name="locationName" value="{{locationName}}" readonly>
+            <input type="text" name="locationName" id="locationName" value="{{locationName}}" readonly>
             <input type="text" name="locationId" value="{{locationId}}" hidden>
         </div>
         <div class="form-group">
@@ -30,33 +26,42 @@
         </div>
         <div class="form-group">
             <label for="incidentDate">Date of Incident:</label>
-            <input type="date" id="incidentDate" name="incidentDate" required>
+            <input type="date" id="incidentDate" name="incidentDate" value="{{incidentDate}}" required>
         </div>
         <div class="form-group">
             <label for="bikeDescription">Bike Description (Make, Model, Color):</label>
-            <textarea id="bikeDescription" name="bikeDescription" rows="4" required></textarea>
+            <textarea id="bikeDescription" name="bikeDescription"  rows="4" required>{{bikeDescription}}</textarea>
         </div>
         <div class="form-group">
             <label for="contactEmail">Contact Email:</label>
-            <input type="email" id="contactEmail" name="contactEmail" required>
+            <input type="email" id="contactEmail" name="contactEmail"  value="{{contactEmail}}" required>
         </div>
         <div class="form-group">
             <label for="contactPhone">Contact Phone:</label>
-            <input type="tel" id="contactPhone" name="contactPhone" required>
+            <input type="tel" id="contactPhone" name="contactPhone"  value="{{contactPhone}}" required>
         </div>
         <div class="form-group">
             <label for="notes">Additional Notes:</label>
-            <textarea id="notes" name="notes" rows="3"></textarea>
+            <textarea id="notes" name="notes" rows="3">{{notes}}</textarea>
         </div>
         <div class="action-row">
             <button type="submit" class="btn">Submit Report</button>
             <a href="/dashboard" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
+
+    <p id="error-container" style="color:red; display:none;"></p>
+
   </article>
 </section>
 
 {{else}}
+    {{#if error}}
+    <div class="error-message">
+        {{error}}
+    </div>
+    {{/if}}
+
     <h2>Select Location</h2>
     <a class="btn" href="/locations">Search</a>
 {{/if}}

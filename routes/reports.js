@@ -98,8 +98,6 @@ router.post('/:id/delete', async (req, res) => {
     });
 
     }
-
-
 });
 
 router.post('/:id/recovered', async (req, res) => {
