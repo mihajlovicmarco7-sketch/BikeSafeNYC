@@ -60,6 +60,16 @@ const exportedMethods = {
         return value;  
     },
 
+    checkStatus(value) {
+        if (!value) throw new Error('status is required');
+        if (typeof value !== 'string') throw new Error('Status must be a string');
+        value = value.trim();
+        if (value !== 'missing' && value !== 'recovered') {
+            throw new Error("Invalid status");
+        }
+        return value;
+    },
+
     getBoundingCoordinatesForDistance(latitude, longitude, distance){
         // Distance input is in miles
 
