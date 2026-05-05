@@ -1,34 +1,41 @@
 import validation from '../helpers.js'
 import { Router } from 'express';
-const router = Router();
-
+import { requireLogin } from '../middleware/auth.js';
 import {theftReportsData} from '../data/index.js';
 //import {updateSafetyRating} from '../data/locations.js';
 
+const router = Router();
+
+// Show blank stolen bike report form
 router
   .route('/')
-  .get(async (req, res) => {
+  .get(requireLogin, async (req, res) => {
     try {
-      res.render('theftReports', { title: 'Report Stolen Bike', hasLocation: false });
+      return res.render('theftReports', {
+        title: 'Report Stolen Bike',
+        hasLocation: false
+      });
     } catch (e) {
-      res.status(500).json({ error: e });
+      return res.status(500).render('error', {
+        title: 'Error',
+        message: e
+      });
     }
   })
-  .post(async (req, res) => {
-    let { 
-        locationId, 
-        locationName, 
-        incidentDate, 
-        bikeDescription, 
-        contactEmail, 
-        contactPhone, 
-        notes 
+  .post(requireLogin, async (req, res) => {
+    let {
+      locationId,
+      locationName,
+      incidentDate,
+      bikeDescription,
+      contactEmail,
+      contactPhone,
+      notes
     } = req.body;
 
     let userId = req.session.user._id;
 
     try {
-      // validate inputs
       userId = validation.checkId(userId);
       locationId = validation.checkId(locationId);
       locationName = validation.checkString(locationName, 'locationName');
@@ -59,33 +66,52 @@ router
       );
 
       if (!result) {
-        return res.status(500).render('theftReports', { error: "Internal Server Error" });
-      } 
-      // TODO: Re-enable when updateSafetyRating is implemented in data/locations.js
-      //await updateSafetyRating(locationId, 0.5);
-      return res.redirect('/dashboard'); 
+        return res.status(500).render('theftReports', {
+          title: 'Report Stolen Bike',
+          error: 'Internal Server Error',
+          ...req.body
+        });
+      }
 
+      // TODO: Re-enable when updateSafetyRating is implemented in data/locations.js
+      // await updateSafetyRating(locationId, 0.5);
+
+      return res.redirect('/dashboard');
     } catch (e) {
-      return res.status(400).render('theftReports', { 
-        error: e, 
-        formData: req.body 
+      return res.status(400).render('theftReports', {
+        title: 'Report Stolen Bike',
+        error: e,
+        ...req.body
       });
     }
   });
 
+// Show stolen bike report form pre-filled from a selected location
 router
-    .route("/:locationId")
-  .post(async (req, res) => {
-    const locationId = req.params.locationId;
-    const locationName = req.body.locationName;
-    const address = req.body.address;
+  .route('/:locationId')
+  .post(requireLogin, async (req, res) => {
+    let locationId = req.params.locationId;
+    let locationName = req.body.locationName;
+    let address = req.body.address;
 
-    return res.render('theftReports', 
-      { title: 'Report Stolen Bike', 
-        locationId: locationId, 
-        locationName: locationName,
-        address: address });
+    try {
+      locationId = validation.checkId(locationId);
+      locationName = validation.checkString(locationName, 'locationName');
+      address = validation.checkString(address, 'address');
 
+      return res.render('theftReports', {
+        title: 'Report Stolen Bike',
+        locationId,
+        locationName,
+        address,
+        hasLocation: true
+      });
+    } catch (e) {
+      return res.status(400).render('theftReports', {
+        title: 'Report Stolen Bike',
+        error: e
+      });
+    }
   });
 
 export default router;

@@ -9,17 +9,17 @@ const constructorMethod = (app) => {
   app.get('/', (req, res) => {
     res.redirect('/dashboard'); 
   });
+
+  app.use('/', authRoutes);
   app.use('/', dashboardRoutes);
   app.use('/locations', locationRoutes);
   app.use('/theftReports', theftReportsRoutes);
   app.use('/reports', reportsRoutes);
   app.use('/favorites', favoritesRoutes);
-  app.use('/', authRoutes)
   
   app.use((req, res) => {
     res.status(404).render('error', { title: '404', message: 'Page not found' });
   });
-
 };
 
 export default constructorMethod;

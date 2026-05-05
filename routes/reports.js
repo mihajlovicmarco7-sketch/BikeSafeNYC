@@ -1,16 +1,29 @@
 import { Router } from 'express';
-import {theftReportsData} from '../data/index.js';
+import { theftReportsData } from '../data/index.js';
+import { requireLogin } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/:id/edit', async (req, res) => {
+const userOwnsReport = (report, userId) => {
+  return report.userId.toString() === userId.toString();
+};
+
+router.get('/:id/edit', requireLogin, async (req, res) => {
   const reportId = req.params.id;
-  
+
   try {
     const report = await theftReportsData.getTheftReportsById(reportId);
+
+    if (!userOwnsReport(report, req.session.user._id)) {
+      return res.status(403).render('error', {
+        title: 'Forbidden',
+        message: 'You can only edit your own reports.'
+      });
+    }
+
     return res.render('reports/edit', {
       title: 'Edit Report',
-      report: report
+      report
     });
   } catch (e) {
     return res.status(404).render('error', {
@@ -18,13 +31,20 @@ router.get('/:id/edit', async (req, res) => {
       message: 'Report not found.'
     });
   }
-
 });
 
-router.post('/:id/edit', async (req, res) => {
+router.post('/:id/edit', requireLogin, async (req, res) => {
+  const reportId = req.params.id;
+
   try {
-    const reportId = req.params.id;
     const report = await theftReportsData.getTheftReportsById(reportId);
+
+    if (!userOwnsReport(report, req.session.user._id)) {
+      return res.status(403).render('error', {
+        title: 'Forbidden',
+        message: 'You can only edit your own reports.'
+      });
+    }
 
     const {
       bikeDescription,
@@ -35,11 +55,11 @@ router.post('/:id/edit', async (req, res) => {
       status
     } = req.body;
 
-    // Basic temporary validation
     if (!bikeDescription || !incidentDate || !contactEmail || !status) {
       return res.status(400).render('reports/edit', {
         title: 'Edit Report',
         report: {
+          ...report,
           bikeDescription,
           incidentDate,
           contactEmail,
@@ -55,6 +75,7 @@ router.post('/:id/edit', async (req, res) => {
       return res.status(400).render('reports/edit', {
         title: 'Edit Report',
         report: {
+          ...report,
           bikeDescription,
           incidentDate,
           contactEmail,
@@ -67,16 +88,16 @@ router.post('/:id/edit', async (req, res) => {
     }
 
     await theftReportsData.updateReport(
-      reportId,  
+      reportId,
       bikeDescription.trim(),
       incidentDate,
       contactEmail.trim(),
       contactPhone ? contactPhone.trim() : '',
       notes ? notes.trim() : '',
-      status); 
+      status
+    );
 
     return res.redirect('/dashboard');
-
   } catch (e) {
     return res.status(404).render('error', {
       title: 'Not Found',
@@ -85,55 +106,64 @@ router.post('/:id/edit', async (req, res) => {
   }
 });
 
-router.post('/:id/delete', async (req, res) => {
+router.post('/:id/delete', requireLogin, async (req, res) => {
   const reportId = req.params.id;
-
-    try {
-        result = await theftReportsData.deleteReport(reportId);
-        return res.redirect('/dashboard');        
-    } catch (e) {
-      return res.status(404).render('error', {
-      title: 'Not Found',
-      message: e
-    });
-
-    }
-
-
-});
-
-router.post('/:id/recovered', async (req, res) => {
-  const reportId = req.params.id;
-
-  try {
-    await theftReportsData.updateReportStatus(reportId, 'recovered');
-    return res.redirect('/dashboard');
-
-  } catch (e) {
-      return res.status(404).render('error', {
-      title: 'Not Found',
-      message: e
-    });
-
-  }
-});
-
-router.post('/:id/comments', async (req, res) => {
-  const reportId = req.params.id;
-  const commentText = req.body.commentText;
-
-  if (!req.session.user) {
-      return res.status(404).render('error', {
-      title: 'Comment Post Error',
-      message: "Sign in to post"
-    });
-  }      
-
-  let userId = req.session.user._id;
-  let userName = req.session.user.username;
 
   try {
     const report = await theftReportsData.getTheftReportsById(reportId);
+
+    if (!userOwnsReport(report, req.session.user._id)) {
+      return res.status(403).render('error', {
+        title: 'Forbidden',
+        message: 'You can only delete your own reports.'
+      });
+    }
+
+    await theftReportsData.deleteReport(reportId);
+
+    return res.redirect('/dashboard');
+  } catch (e) {
+    return res.status(404).render('error', {
+      title: 'Not Found',
+      message: e
+    });
+  }
+});
+
+router.post('/:id/recovered', requireLogin, async (req, res) => {
+  const reportId = req.params.id;
+
+  try {
+    const report = await theftReportsData.getTheftReportsById(reportId);
+
+    if (!userOwnsReport(report, req.session.user._id)) {
+      return res.status(403).render('error', {
+        title: 'Forbidden',
+        message: 'You can only update your own reports.'
+      });
+    }
+
+    await theftReportsData.updateReportStatus(reportId, 'recovered');
+
+    return res.redirect('/dashboard');
+  } catch (e) {
+    return res.status(404).render('error', {
+      title: 'Not Found',
+      message: e
+    });
+  }
+});
+
+router.post('/:id/comments', requireLogin, async (req, res) => {
+  const reportId = req.params.id;
+  const commentText = req.body.commentText;
+
+  const userId = req.session.user._id;
+  const username = req.session.user.username;
+
+  try {
+    const report = await theftReportsData.getTheftReportsById(reportId);
+
     if (report.status !== 'missing') {
       return res.status(400).render('error', {
         title: 'Invalid Request',
@@ -150,16 +180,15 @@ router.post('/:id/comments', async (req, res) => {
       });
     }
 
-    await theftReportsData.addComment(reportId, userId, userName, trimmedComment);
+    await theftReportsData.addComment(reportId, userId, username, trimmedComment);
 
-    return res.redirect('/missing-bikes');    
+    return res.redirect('/missing-bikes');
   } catch (e) {
-      return res.status(404).render('error', {
+    return res.status(404).render('error', {
       title: 'Not Found',
       message: e
     });
   }
-
 });
 
 export default router;

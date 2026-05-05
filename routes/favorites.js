@@ -3,7 +3,7 @@ import { mockFavorites } from '../data/mockData.js';
 
 const router = Router();
 
-router.post('/favorites/:locationId/remove', async (req, res) => {
+router.post('/:locationId/remove', async (req, res) => {
     const locationId = req.params.locationId;
 
     const favoriteIndex = mockFavorites.findIndex(
@@ -22,7 +22,7 @@ router.post('/favorites/:locationId/remove', async (req, res) => {
     return res.redirect('/dashboard');
 });
 
-router.post('/favorites/:locationId/add', async (req, res) => {
+router.post('/:locationId/add', async (req, res) => {
     const locationId = req.params.locationId;
 
     // Prevent duplicates

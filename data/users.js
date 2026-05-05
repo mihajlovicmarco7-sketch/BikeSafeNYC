@@ -3,8 +3,9 @@ import bcrypt from 'bcrypt';
 import { dbConnection } from '../config/mongoConnection.js';
 
 const saltRounds = 12;
+
 const getUsersCollection = async () => {
-const db = await dbConnection();
+  const db = await dbConnection();
   return db.collection('users');
 };
 
@@ -25,7 +26,7 @@ const checkString = (str, fieldName) => {
 const validateEmail = (email) => {
   email = checkString(email, 'Email').toLowerCase();
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(email)) {
     throw 'Invalid email address';
@@ -41,7 +42,7 @@ const validateUsername = (username) => {
     throw 'Username must be between 3 and 25 characters';
   }
 
-const usernameRegex = /^[a-zA-Z0-9_]+$/;
+  const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
   if (!usernameRegex.test(username)) {
     throw 'Username may only contain letters, numbers, and underscores';
@@ -109,7 +110,7 @@ export const createUser = async (
     email: email.toLowerCase(),
     role: 'user',
     hashedPassword,
-    favoriteLocations: [],
+    favoriteLocationIds: [],
     createdAt: new Date(),
     updatedAt: new Date()
   };

@@ -1,7 +1,7 @@
 import {theftReportsData} from './data/index.js';
 import { ObjectId } from 'mongodb';
 import {closeConnection} from './config/mongoConnection.js';
-import {getAllParkingLocations} from './data/locations.js';
+import {getAllParkingLocations, getParkingLocationById, updateSafetyRating} from './data/locations.js';
 
 async function main(){
 
@@ -79,7 +79,7 @@ async function main(){
             locationId,
             'Gym Parking Lot',
             '2026-04-02T19:30:00.000Z',
-            'Grey Cannondale MTB',
+            'Yellow Cannondale MTB 18',
             'fitness@fit.com',
             '(555)-123-1234',
             'CREATED REPORT'
@@ -91,22 +91,94 @@ async function main(){
     }
 
     console.log("---------------------------------------");
+    console.log("updateReport");
+    console.log("---------------------------------------");
+
+    try {
+        result = await theftReportsData.updateReport(
+            id,   
+            "UPDATED bikeDescription",
+            "01/01/1980",
+            "UPDATED contactEmail",
+            "UPDATED contactPhone",
+            "UPDATED notes",
+            "UPDATED status");
+
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+
+
+    console.log("---------------------------------------");
     console.log("updateReportStatus");
     console.log("---------------------------------------");
 
     try {
-        result = await theftReportsData.updateReportStatus(id, "UPDATED!!!")
+        result = await theftReportsData.updateReportStatus(id, "missing")
         console.dir(result, {depth: null});
     } catch (e) {
         console.log(e);
     }
 
     console.log("---------------------------------------");
+    console.log("addComment");
+    console.log("---------------------------------------");
+
+    try {
+        result = await theftReportsData.addComment(id, userId, "MARCO", "FIRST COMMENT!!!");
+        console.dir(result, {depth: null});
+        result = await theftReportsData.addComment(id, userId, "TOM", "SECOND COMMENT!!!");
+        console.dir(result, {depth: null});
+
+    } catch (e) {
+        console.log(e);
+    }
+
+/*
+    console.log("---------------------------------------");
     console.log("deleteReport");
     console.log("---------------------------------------");
 
     try {
         result = await theftReportsData.deleteReport(id);
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+*/
+    console.log("---------------------------------------");
+    console.log("getAllParkingLocations");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getAllParkingLocations()
+        result[0]._id = result[0]._id.toString();
+        console.dir(result[0], {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("getParkingLocationById");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getParkingLocationById('69f54125ddea28fe322a172f');
+        result._id = result._id.toString();
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("updateSafetyRating");
+    console.log("---------------------------------------");
+
+    try {
+        result = await updateSafetyRating('69f54125ddea28fe322a172f', 0.5);
+        result._id = result._id.toString();
         console.dir(result, {depth: null});
     } catch (e) {
         console.log(e);

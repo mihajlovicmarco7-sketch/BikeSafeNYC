@@ -68,6 +68,21 @@ async updateReport(
 
   id = validation.checkId(id); 
   // TODO: validate and trim
+  
+  bikeDescription = validation.checkString(bikeDescription, 'bikeDescription');
+  if (bikeDescription.length > 500) {
+    bikeDescription = bikeDescription.substring(0, 500);
+  }
+  
+  incidentDate = validation.checkIncidentDate(incidentDate);
+  contactEmail = validation.checkEmail(contactEmail, 'contactEmail');
+  contactPhone = validation.checkString(contactPhone, 'contactPhone');
+  
+  notes = validation.checkNotes(notes);
+  if (notes.length > 500) {
+    notes = notes.substring(0, 500);
+  }
+  status = validation.checkStatus(status);
 
   const theftReportsCollection = await theftReports();
 
@@ -187,12 +202,13 @@ async updateReportStatus(id, newStatus){
   if (newStatus !== 'missing' && newStatus !== 'recovered') {
     throw new Error("Invalid status");
   }
+  newStatus = validation.checkStatus(newStatus);
   
   const theftReportsCollection = await theftReports();
 
   const updateInfo = await theftReportsCollection.updateOne(
     { _id: new ObjectId(id) },
-    { $set: { status: newStatus.trim() } }
+    { $set: { status: newStatus } }
   );
 
   if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
@@ -259,12 +275,16 @@ async addComment(
     username,
     text) {
 
-    id = validation.checkId(id); 
-    userId = validation.checkId(userId); 
-  // TODO: validate and trim
+  id = validation.checkId(id); 
+  userId = validation.checkId(userId); 
+  username = validation.checkString(username, 'username');
+  text = validation.checkString(text, 'comment');
+
+  if (text.length > 500) {
+    text = text.substring(0, 500);
+  }
 
   const theftReportsCollection = await theftReports();
-
   
   let newComment = {
     _id: new ObjectId(),
