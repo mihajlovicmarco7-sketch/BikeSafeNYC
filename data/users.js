@@ -107,7 +107,8 @@ export const createUser = async (
     lastName,
     username: username.toLowerCase(),
     email: email.toLowerCase(),
-    password: hashedPassword,
+    role: 'user',
+    hashedPassword,
     favoriteLocations: [],
     createdAt: new Date(),
     updatedAt: new Date()
@@ -123,8 +124,9 @@ export const createUser = async (
     _id: insertInfo.insertedId.toString(),
     firstName,
     lastName,
-    username,
-    email
+    username: username.toLowerCase(),
+    email: email.toLowerCase(),
+    role: 'user'
   };
 };
 
@@ -143,7 +145,7 @@ export const getUserById = async (id) => {
   }
 
   user._id = user._id.toString();
-  delete user.password;
+  delete user.hashedPassword;
 
   return user;
 };
@@ -172,7 +174,7 @@ export const loginUser = async (identifier, password) => {
   password = checkString(password, 'Password');
 
   const user = await getUserByUsernameOrEmail(identifier);
-  const passwordMatch = await bcrypt.compare(password, user.password);
+  const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
 
   if (!passwordMatch) {
     throw 'Invalid username/email or password';
@@ -183,6 +185,7 @@ export const loginUser = async (identifier, password) => {
     firstName: user.firstName,
     lastName: user.lastName,
     username: user.username,
-    email: user.email
+    email: user.email,
+    role: user.role
   };
 };

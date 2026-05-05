@@ -1,184 +1,165 @@
 import { Router } from 'express';
-import { mockReports, mockUser } from '../data/mockData.js';
+import {theftReportsData} from '../data/index.js';
 
 const router = Router();
 
-// 🔥 NEW: helper validation functions
-const isValidEmail = (email) => {
-  return typeof email === 'string' && email.includes('@') && email.includes('.');
-};
-
-const isValidDate = (date) => {
-  return !isNaN(Date.parse(date));
-};
-
-// 🔥 MAIN ROUTE
-router.get('/', async (req, res) => {
-  console.log("Reports route loaded"); // visible change
-
-  const missingReports = mockReports.filter(
-    (r) => r.status === 'missing'
-  );
-
-  return res.render('missing-bikes', {
-    title: 'Missing Bikes Board',
-    reports: missingReports,
-    hasReports: missingReports.length > 0
-  });
-});
-
-// 🔥 EDIT PAGE
 router.get('/:id/edit', async (req, res) => {
   const reportId = req.params.id;
-  const report = mockReports.find((r) => r._id === reportId);
-
-  if (!report) {
+  
+  try {
+    const report = await theftReportsData.getTheftReportsById(reportId);
+    return res.render('reports/edit', {
+      title: 'Edit Report',
+      report: report
+    });
+  } catch (e) {
     return res.status(404).render('error', {
       title: 'Not Found',
       message: 'Report not found.'
     });
   }
 
-  return res.render('reports/edit', {
-    title: 'Edit Report',
-    report
-  });
 });
 
-// 🔥 EDIT SUBMIT
 router.post('/:id/edit', async (req, res) => {
-  const reportId = req.params.id;
-  const report = mockReports.find((r) => r._id === reportId);
+  try {
+    const reportId = req.params.id;
+    const report = await theftReportsData.getTheftReportsById(reportId);
 
-  if (!report) {
+    const {
+      bikeDescription,
+      incidentDate,
+      contactEmail,
+      contactPhone,
+      notes,
+      status
+    } = req.body;
+
+    // Basic temporary validation
+    if (!bikeDescription || !incidentDate || !contactEmail || !status) {
+      return res.status(400).render('reports/edit', {
+        title: 'Edit Report',
+        report: {
+          bikeDescription,
+          incidentDate,
+          contactEmail,
+          contactPhone,
+          notes,
+          status
+        },
+        error: 'Bike description, incident date, contact email, and status are required.'
+      });
+    }
+
+    if (status !== 'missing' && status !== 'recovered') {
+      return res.status(400).render('reports/edit', {
+        title: 'Edit Report',
+        report: {
+          bikeDescription,
+          incidentDate,
+          contactEmail,
+          contactPhone,
+          notes,
+          status
+        },
+        error: 'Status must be either missing or recovered.'
+      });
+    }
+
+    await theftReportsData.updateReport(
+      reportId,  
+      bikeDescription.trim(),
+      incidentDate,
+      contactEmail.trim(),
+      contactPhone ? contactPhone.trim() : '',
+      notes ? notes.trim() : '',
+      status); 
+
+    return res.redirect('/dashboard');
+
+  } catch (e) {
     return res.status(404).render('error', {
       title: 'Not Found',
-      message: 'Report not found.'
+      message: e
     });
   }
-
-  const {
-    bikeDescription,
-    incidentDate,
-    contactEmail,
-    contactPhone,
-    notes,
-    status
-  } = req.body;
-
-  // 🔥 IMPROVED VALIDATION
-  if (!bikeDescription || !incidentDate || !contactEmail || !status) {
-    return res.status(400).render('reports/edit', {
-      title: 'Edit Report',
-      report: { ...report, ...req.body },
-      error: 'All required fields must be filled.'
-    });
-  }
-
-  if (!isValidEmail(contactEmail)) {
-    return res.status(400).render('reports/edit', {
-      title: 'Edit Report',
-      report: { ...report, ...req.body },
-      error: 'Invalid email format.'
-    });
-  }
-
-  if (!isValidDate(incidentDate)) {
-    return res.status(400).render('reports/edit', {
-      title: 'Edit Report',
-      report: { ...report, ...req.body },
-      error: 'Invalid date format.'
-    });
-  }
-
-  // 🔥 CLEAN DATA
-  report.bikeDescription = bikeDescription.trim();
-  report.incidentDate = incidentDate;
-  report.contactEmail = contactEmail.trim();
-  report.contactPhone = contactPhone ? contactPhone.trim() : '';
-  report.notes = notes ? notes.trim() : '';
-  report.status = status;
-  report.updatedAt = new Date().toISOString();
-
-  console.log(`Report ${reportId} updated`);
-
-  return res.redirect('/dashboard');
 });
 
-// 🔥 DELETE
 router.post('/:id/delete', async (req, res) => {
   const reportId = req.params.id;
-  const index = mockReports.findIndex((r) => r._id === reportId);
 
-  if (index === -1) {
-    return res.status(404).render('error', {
+    try {
+        result = await theftReportsData.deleteReport(reportId);
+        return res.redirect('/dashboard');        
+    } catch (e) {
+      return res.status(404).render('error', {
       title: 'Not Found',
-      message: 'Report not found.'
+      message: e
     });
-  }
 
-  mockReports.splice(index, 1);
-  console.log(`Report ${reportId} deleted`);
+    }
 
-  return res.redirect('/dashboard');
+
 });
 
-// 🔥 MARK RECOVERED
 router.post('/:id/recovered', async (req, res) => {
   const reportId = req.params.id;
-  const report = mockReports.find((r) => r._id === reportId);
 
-  if (!report) {
-    return res.status(404).render('error', {
+  try {
+    await theftReportsData.updateReportStatus(reportId, 'recovered');
+    return res.redirect('/dashboard');
+
+  } catch (e) {
+      return res.status(404).render('error', {
       title: 'Not Found',
-      message: 'Report not found.'
+      message: e
     });
+
   }
-
-  report.status = 'recovered';
-  report.updatedAt = new Date().toISOString();
-
-  console.log(`Report ${reportId} marked as recovered`);
-
-  return res.redirect('/dashboard');
 });
 
-// 🔥 COMMENTS
 router.post('/:id/comments', async (req, res) => {
   const reportId = req.params.id;
-  const { commentText } = req.body;
+  const commentText = req.body.commentText;
 
-  const report = mockReports.find((r) => r._id === reportId);
+  if (!req.session.user) {
+      return res.status(404).render('error', {
+      title: 'Comment Post Error',
+      message: "Sign in to post"
+    });
+  }      
 
-  if (!report) {
-    return res.status(404).render('error', {
+  let userId = req.session.user._id;
+  let userName = req.session.user.username;
+
+  try {
+    const report = await theftReportsData.getTheftReportsById(reportId);
+    if (report.status !== 'missing') {
+      return res.status(400).render('error', {
+        title: 'Invalid Request',
+        message: 'Comments can only be added to active missing bike reports.'
+      });
+    }
+
+    const trimmedComment = commentText ? commentText.trim() : '';
+
+    if (!trimmedComment || trimmedComment.length < 2 || trimmedComment.length > 500) {
+      return res.status(400).render('error', {
+        title: 'Invalid Comment',
+        message: 'Comment must be between 2 and 500 characters.'
+      });
+    }
+
+    await theftReportsData.addComment(reportId, userId, userName, trimmedComment);
+
+    return res.redirect('/missing-bikes');    
+  } catch (e) {
+      return res.status(404).render('error', {
       title: 'Not Found',
-      message: 'Report not found.'
+      message: e
     });
   }
 
-  const trimmed = commentText ? commentText.trim() : '';
-
-  if (!trimmed || trimmed.length < 2 || trimmed.length > 500) {
-    return res.status(400).render('error', {
-      title: 'Invalid Comment',
-      message: 'Comment must be between 2 and 500 characters.'
-    });
-  }
-
-  report.comments.push({
-    _id: `comment${Date.now()}`,
-    userId: mockUser._id,
-    username: mockUser.username,
-    text: trimmed,
-    createdAt: new Date().toISOString()
-  });
-
-  report.updatedAt = new Date().toISOString();
-
-  console.log(`Comment added to report ${reportId}`);
-
-  return res.redirect('/reports');
 });
 
 export default router;

@@ -5,7 +5,7 @@
     {{#if locations.length}}
         <ul>
             {{#each locations}}
-                <li><a href="/locations/{{this._id}}?backLink={{../backLink}}">{{this.locationName}}</a></li>
+                <li><a href="/locations/{{this._id}}?backLink={{../backLink}}">{{this.locationName}}</a> - Safety Score: <span class="{{safetyClass this.safetyRating}}">{{safetyLetter this.safetyRating}}</span></li>
             {{/each}}
         </ul>
     {{else}}

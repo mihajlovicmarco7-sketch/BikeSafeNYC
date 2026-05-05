@@ -7,9 +7,15 @@
 
 <section class="dashboard-section">
   <div class="section-header">
-    <h2>My Theft Reports</h2>
-<a class="btn" href="/reports">View Missing Bikes Board</a>
+    <h2>New Theft Report</h2>
+    <a class="btn" href="/theftReports">Create Report</a>
   </div>
+
+  <div class="section-header">
+    <h2>My Theft Reports</h2>
+    <a class="btn" href="/missing-bikes">View Missing Bikes Board</a>
+  </div>
+
   {{#if hasReports}}
     <div class="report-grid">
       {{#each reports}}
@@ -38,7 +44,25 @@
             {{#if notes}}
               <p><strong>Notes:</strong> {{notes}}</p>
             {{/if}}
-          </div>
+
+            <div class="comments-section">
+              <h4>Comments</h4>
+
+              {{#if comments.length}}
+                <ul class="comment-list">
+                  {{#each comments}}
+                    <li class="comment">
+                      <p class="comment-text">{{text}}</p>
+                      <p class="comment-meta">
+                        — User {{username}} on {{formatDate createdAt}}
+                      </p>
+                    </li>
+                  {{/each}}
+                </ul>
+              {{else}}
+                <p class="empty-comments">No comments yet.</p>
+              {{/if}}
+            </div>
 
           <div class="action-row">
             <a class="btn" href="/reports/{{_id}}/edit">Edit</a>
@@ -52,7 +76,9 @@
                 <button type="submit" class="btn btn-danger">Delete</button>
             </form>
             {{#unless (eq status "recovered")}}
-
+              <form method="POST" action="/reports/{{_id}}/recovered" class="inline-form">
+                <button type="submit" class="btn btn-success">Mark as Recovered</button>
+              </form>
             {{/unless}}
           </div>
         </article>
@@ -88,7 +114,7 @@
           >
             <button type="submit" class="btn btn-danger">Remove Favorite</button>
           </form>
-
+          
           <form method="POST" action="/favorites/loc99/add">
             <button class="btn">Add Test Favorite</button>
           </form>

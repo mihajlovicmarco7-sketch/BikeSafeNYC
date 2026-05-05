@@ -13,13 +13,29 @@ async createReport(
     contactPhone,
     notes) {
   
-  // TODO: validation
+  userId = validation.checkId(userId);
+  locationId = validation.checkId(locationId);
+  locationName = validation.checkString(locationName, 'locationName');
+  incidentDate = validation.checkIncidentDate(incidentDate);
+  
+  bikeDescription = validation.checkString(bikeDescription, 'bikeDescription');
+  if (bikeDescription.length > 500) {
+    bikeDescription = bikeDescription.substring(0, 500);
+  }
+  
+  contactEmail = validation.checkEmail(contactEmail, 'contactEmail');
+  contactPhone = validation.checkString(contactPhone, 'contactPhone');
+  
+  notes = validation.checkNotes(notes);
+  if (notes.length > 500) {
+    notes = notes.substring(0, 500);
+  }
 
   let newReport = {
     userId: new ObjectId(userId),
     locationId: new ObjectId(locationId),
     locationName: locationName,
-    incidentDate: new Date(incidentDate),
+    incidentDate: new Date(incidentDate.replace(/-/g, '/')),
     bikeDescription: bikeDescription,
     contactEmail: contactEmail,
     contactPhone: contactPhone,
@@ -39,6 +55,51 @@ async createReport(
   const data = await this.getTheftReportsById(newId);
   
   return data;
+},
+
+async updateReport(
+    id,  
+    bikeDescription,
+    incidentDate,
+    contactEmail,
+    contactPhone,
+    notes,
+    status) {
+
+  id = validation.checkId(id); 
+  // TODO: validate and trim
+
+  const theftReportsCollection = await theftReports();
+
+  const updateInfo = await theftReportsCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { 
+      bikeDescription: bikeDescription,
+      incidentDate: new Date(incidentDate),       
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+      notes: notes,
+      status: status,
+      updatedAt: new Date()  }
+    }
+  );
+
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw new Error(`Could not update report with id of ${id}`);
+  }
+
+  const updatedReport = await theftReportsCollection.findOne({ _id: new ObjectId(id) });
+  
+  updatedReport._id = updatedReport._id.toString();
+  updatedReport.userId = updatedReport.userId.toString();
+  updatedReport.locationId = updatedReport.locationId.toString();
+
+  updatedReport.comments.forEach(comment => {
+    comment._id = comment._id.toString();
+    comment.userId = comment.userId.toString();
+  });
+  
+  return updatedReport;
 },
 
 async getAllTheftReports(){
@@ -123,7 +184,10 @@ async updateReportStatus(id, newStatus){
   id = validation.checkId(id);
   if (!newStatus) throw new Error('status is required');
   if (typeof newStatus !== 'string') throw new Error('Status must be a string');
-
+  if (newStatus !== 'missing' && newStatus !== 'recovered') {
+    throw new Error("Invalid status");
+  }
+  
   const theftReportsCollection = await theftReports();
 
   const updateInfo = await theftReportsCollection.updateOne(
@@ -158,7 +222,7 @@ async deleteReport(id){
   });
 
   if (!data) {
-    throw `Could not report with ID of ${id}`;
+    throw `Could not delete report with ID of ${id}`;
   }
 
   return {id: id, deleted: true};
@@ -187,7 +251,43 @@ async getReportsByUser(userId){
   });    
   
   return userReports;
-}
+},
+
+async addComment(
+    id,
+    userId,
+    username,
+    text) {
+
+    id = validation.checkId(id); 
+    userId = validation.checkId(userId); 
+  // TODO: validate and trim
+
+  const theftReportsCollection = await theftReports();
+
+  
+  let newComment = {
+    _id: new ObjectId(),
+    userId: new ObjectId(userId),
+    username: username,
+    text: text,
+    createdAt: new Date()
+  };
+  
+  const updateInfo = await theftReportsCollection.updateOne(
+    {_id: new ObjectId(id)}, 
+    {
+      $push: {comments: newComment}
+    }
+  );
+  
+  if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+    throw new Error(`Could not update report with id of ${id}`);
+  }
+
+  return await this.getTheftReportsById(id);
+  
+},
 
 };
 
