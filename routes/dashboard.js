@@ -1,20 +1,19 @@
 import { Router } from 'express';
-import { mockUser,  mockFavorites } from '../data/mockData.js';
-import {theftReportsData} from '../data/index.js';
+import { requireLogin } from '../middleware/auth.js';
+import { theftReportsData } from '../data/index.js';
 
 const router = Router();
 
-router.get('/dashboard', async (req, res) => {
-  
+router.get('/dashboard', requireLogin, async (req, res) => {
   const reports = await theftReportsData.getReportsByUser(req.session.user._id);
 
   return res.render('dashboard', {
     title: 'My Dashboard',
     user: req.session.user,
-    reports: reports,
-    favorites: mockFavorites,
+    reports,
+    favorites: [],
     hasReports: reports.length > 0,
-    hasFavorites: mockFavorites.length > 0
+    hasFavorites: false
   });
 });
 
