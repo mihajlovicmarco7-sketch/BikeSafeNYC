@@ -5,7 +5,7 @@ import MongoStore from 'connect-mongo';
 import exphbs from 'express-handlebars';
 
 import configRoutes from './routes/index.js';
-import helpers from './helpers/helpers.js';
+import helpers from './helpers.js';
 
 const app = express();
 
