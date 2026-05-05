@@ -1,16 +1,25 @@
 (function () {
   const signupForm = document.getElementById('signupForm');
   const loginForm = document.getElementById('loginForm');
-  const showError = (message) => {
-    let error = document.querySelector('.client-error');
+
+  const showError = (form, message) => {
+    let error = form.querySelector('.client-error');
 
     if (!error) {
       error = document.createElement('p');
-      error.className = 'client-error error';
-      document.querySelector('form').prepend(error);
+      error.className = 'client-error error-message';
+      form.prepend(error);
     }
 
     error.textContent = message;
+  };
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isValidUsername = (username) => {
+    return /^[a-zA-Z0-9_]+$/.test(username);
   };
 
   const isValidPassword = (password) => {
@@ -34,25 +43,40 @@
 
       if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
         event.preventDefault();
-        showError('All fields are required');
+        showError(signupForm, 'All fields are required');
         return;
       }
 
       if (username.length < 3 || username.length > 25) {
         event.preventDefault();
-        showError('Username must be between 3 and 25 characters');
+        showError(signupForm, 'Username must be between 3 and 25 characters');
+        return;
+      }
+
+      if (!isValidUsername(username)) {
+        event.preventDefault();
+        showError(signupForm, 'Username may only contain letters, numbers, and underscores');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        event.preventDefault();
+        showError(signupForm, 'Please enter a valid email address');
         return;
       }
 
       if (!isValidPassword(password)) {
         event.preventDefault();
-        showError('Password must be at least 8 characters and contain uppercase, lowercase, number, and special character');
+        showError(
+          signupForm,
+          'Password must be at least 8 characters and contain uppercase, lowercase, number, and special character'
+        );
         return;
       }
 
       if (password !== confirmPassword) {
         event.preventDefault();
-        showError('Passwords do not match');
+        showError(signupForm, 'Passwords do not match');
       }
     });
   }
@@ -64,7 +88,7 @@
 
       if (!identifier || !password) {
         event.preventDefault();
-        showError('Username/email and password are required');
+        showError(loginForm, 'Username/email and password are required');
       }
     });
   }

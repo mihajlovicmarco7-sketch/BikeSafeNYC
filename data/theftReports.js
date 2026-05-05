@@ -67,6 +67,7 @@ async updateReport(
     status) {
 
   id = validation.checkId(id); 
+  // TODO: validate and trim
   
   bikeDescription = validation.checkString(bikeDescription, 'bikeDescription');
   if (bikeDescription.length > 500) {
@@ -196,6 +197,11 @@ async getMissingReports(){
 
 async updateReportStatus(id, newStatus){
   id = validation.checkId(id);
+  if (!newStatus) throw new Error('status is required');
+  if (typeof newStatus !== 'string') throw new Error('Status must be a string');
+  if (newStatus !== 'missing' && newStatus !== 'recovered') {
+    throw new Error("Invalid status");
+  }
   newStatus = validation.checkStatus(newStatus);
   
   const theftReportsCollection = await theftReports();

@@ -1,21 +1,27 @@
 import { Router } from 'express';
-import { mockUser,  mockFavorites } from '../data/mockData.js';
-import {theftReportsData} from '../data/index.js';
+import { requireLogin } from '../middleware/auth.js';
+import { theftReportsData } from '../data/index.js';
 
 const router = Router();
 
-router.get('/dashboard', async (req, res) => {
-  
-  const reports = await theftReportsData.getReportsByUser(req.session.user._id);
+router.get('/dashboard', requireLogin, async (req, res) => {
+  try {
+    const reports = await theftReportsData.getReportsByUser(req.session.user._id);
 
-  return res.render('dashboard', {
-    title: 'My Dashboard',
-    user: req.session.user,
-    reports: reports,
-    favorites: mockFavorites,
-    hasReports: reports.length > 0,
-    hasFavorites: mockFavorites.length > 0
-  });
+    return res.render('dashboard', {
+      title: 'My Dashboard',
+      user: req.session.user,
+      reports,
+      favorites: [],
+      hasReports: reports.length > 0,
+      hasFavorites: false
+    });
+  } catch (e) {
+    return res.status(500).render('error', {
+      title: 'Error',
+      message: e
+    });
+  }
 });
 
 router.get('/missing-bikes', async (req, res) => {
@@ -29,13 +35,5 @@ router.get('/missing-bikes', async (req, res) => {
     loggedIn: isLoggedIn
   });
 });
-
-router.get('/login', async (req, res) => {
-  req.session.user = { _id: mockUser._id, username: mockUser.username};
-  console.log(`logged in as ${req.session.user.username}`)                      
-  return res.redirect('/dashboard');                     
-});
-
-
 
 export default router;
