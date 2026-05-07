@@ -78,7 +78,7 @@ export const updateSafetyRating = async (id, value) => {
     throw new Error(`Could not update safety rating, id of ${id}`);
   }
 
-  return getParkingLocationById(id);
+  return await getParkingLocationById(id);
 
 };
 

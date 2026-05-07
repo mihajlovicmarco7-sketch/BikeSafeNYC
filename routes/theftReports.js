@@ -2,7 +2,7 @@ import validation from '../helpers.js'
 import { Router } from 'express';
 import { requireLogin } from '../middleware/auth.js';
 import {theftReportsData} from '../data/index.js';
-//import {updateSafetyRating} from '../data/locations.js';
+import {updateSafetyRating} from '../data/locations.js';
 
 const router = Router();
 
@@ -73,8 +73,7 @@ router
         });
       }
 
-      // TODO: Re-enable when updateSafetyRating is implemented in data/locations.js
-      // await updateSafetyRating(locationId, 0.5);
+      await updateSafetyRating(locationId, 0.5);
 
       return res.redirect('/dashboard');
     } catch (e) {

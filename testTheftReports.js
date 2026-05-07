@@ -2,6 +2,7 @@ import {theftReportsData} from './data/index.js';
 import { ObjectId } from 'mongodb';
 import {closeConnection} from './config/mongoConnection.js';
 import {getAllParkingLocations, getParkingLocationById, updateSafetyRating} from './data/locations.js';
+import {getUserByUsernameOrEmail, addFavoriteLocation, removeFavoriteLocation} from './data/users.js';
 
 async function main(){
 
@@ -11,13 +12,40 @@ async function main(){
     let userId = undefined;
 
     console.log("---------------------------------------");
+    console.log("getAllParkingLocations");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getAllParkingLocations()
+        result = result.slice(0, 3);
+        result[0]._id = result[0]._id.toString();
+        result[1]._id = result[1]._id.toString();
+        result[2]._id = result[2]._id.toString();
+        locationId = result[0]._id;
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("getParkingLocationById");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getParkingLocationById(locationId);
+        result._id = result._id.toString();
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
     console.log("getAllTheftReports");
     console.log("---------------------------------------");
 
     try {
         result = await theftReportsData.getAllTheftReports();
         id = result[2]._id;
-        locationId = result[2].locationId;
         userId = result[2].userId;
         console.dir(result, {depth: null});
         //console.log(result);
@@ -46,17 +74,6 @@ async function main(){
         console.log(e);
     }
  
-    console.log("---------------------------------------");
-    console.log("getReportsByUser");
-    console.log("---------------------------------------");
-
-    try {
-        result = await theftReportsData.getReportsByUser(userId);
-        console.dir(result, {depth: null});
-    } catch (e) {
-        console.log(e);
-    }
-
     console.log("---------------------------------------");
     console.log("getMissingReports");
     console.log("---------------------------------------");
@@ -99,10 +116,10 @@ async function main(){
             id,   
             "UPDATED bikeDescription",
             "01/01/1980",
-            "UPDATED contactEmail",
+            "contact@Email.com",
             "UPDATED contactPhone",
             "UPDATED notes",
-            "UPDATED status");
+            "recovered");
 
         console.dir(result, {depth: null});
     } catch (e) {
@@ -161,11 +178,11 @@ async function main(){
     }
 
     console.log("---------------------------------------");
-    console.log("getParkingLocationById");
+    console.log("updateSafetyRating");
     console.log("---------------------------------------");
 
     try {
-        result = await getParkingLocationById('69f54125ddea28fe322a172f');
+        result = await updateSafetyRating(locationId, 0.5);
         result._id = result._id.toString();
         console.dir(result, {depth: null});
     } catch (e) {
@@ -173,12 +190,60 @@ async function main(){
     }
 
     console.log("---------------------------------------");
-    console.log("updateSafetyRating");
+    console.log("getUserByUsernameOrEmail");
     console.log("---------------------------------------");
 
     try {
-        result = await updateSafetyRating('69f54125ddea28fe322a172f', 0.5);
-        result._id = result._id.toString();
+        result = await getUserByUsernameOrEmail('marco');
+        result.favoriteLocationIds = result.favoriteLocationIds.map((id) => { return id = id.toString()});
+        userId = result._id;
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("addFavoriteLocation");
+    console.log("---------------------------------------");
+
+    try {
+        result = await addFavoriteLocation(userId, locationId);
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("getUserByUsernameOrEmail");
+    console.log("---------------------------------------");
+
+    try {
+        result = await getUserByUsernameOrEmail('marco');
+        result.favoriteLocationIds = result.favoriteLocationIds.map((id) => {return id = id.toString()});
+
+        userId = result._id;
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("getReportsByUser");
+    console.log("---------------------------------------");
+
+    try {
+        result = await theftReportsData.getReportsByUser(userId);
+        console.dir(result, {depth: null});
+    } catch (e) {
+        console.log(e);
+    }
+
+    console.log("---------------------------------------");
+    console.log("removeFavoriteLocation");
+    console.log("---------------------------------------");
+
+    try {
+        result = await removeFavoriteLocation(userId, locationId);
         console.dir(result, {depth: null});
     } catch (e) {
         console.log(e);

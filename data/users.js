@@ -1,13 +1,9 @@
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 import { dbConnection } from '../config/mongoConnection.js';
+import { users } from "../config/mongoCollections.js";
 
 const saltRounds = 12;
-
-const getUsersCollection = async () => {
-  const db = await dbConnection();
-  return db.collection('users');
-};
 
 const checkString = (str, fieldName) => {
   if (!str || typeof str !== 'string') {
@@ -90,7 +86,7 @@ export const createUser = async (
   email = validateEmail(email);
   password = validatePassword(password);
 
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await users();
   const existingUser = await usersCollection.findOne({
     $or: [
       { username: username.toLowerCase() },
@@ -138,7 +134,7 @@ export const getUserById = async (id) => {
     throw 'Invalid user ID';
   }
 
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await users();
   const user = await usersCollection.findOne({ _id: new ObjectId(id) });
 
   if (!user) {
@@ -154,7 +150,7 @@ export const getUserById = async (id) => {
 export const getUserByUsernameOrEmail = async (identifier) => {
   identifier = checkString(identifier, 'Username or email').toLowerCase();
 
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await users();
   const user = await usersCollection.findOne({
     $or: [
       { username: identifier },
@@ -198,7 +194,7 @@ export const addFavoriteLocation = async (userId, locationId) => {
   if (!ObjectId.isValid(userId)) throw 'Invalid user ID';
   if (!ObjectId.isValid(locationId)) throw 'Invalid location ID';
 
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await users();
 
   const updateInfo = await usersCollection.updateOne(
     { _id: new ObjectId(userId) },
@@ -222,7 +218,7 @@ export const removeFavoriteLocation = async (userId, locationId) => {
   if (!ObjectId.isValid(userId)) throw 'Invalid user ID';
   if (!ObjectId.isValid(locationId)) throw 'Invalid location ID';
 
-  const usersCollection = await getUsersCollection();
+  const usersCollection = await users();
 
   const updateInfo = await usersCollection.updateOne(
     { _id: new ObjectId(userId) },
