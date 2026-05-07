@@ -1,50 +1,41 @@
 import { Router } from 'express';
-import { mockFavorites } from '../data/mockData.js';
+import { requireLogin } from '../middleware/auth.js';
+import {
+  addFavoriteLocation,
+  removeFavoriteLocation
+} from '../data/users.js';
 
 const router = Router();
 
-router.post('/:locationId/remove', async (req, res) => {
-    const locationId = req.params.locationId;
+router.post('/:locationId/add', requireLogin, async (req, res) => {
+  const locationId = req.params.locationId;
 
-    const favoriteIndex = mockFavorites.findIndex(
-        (location) => location._id === locationId
-    );
+  try {
+    await addFavoriteLocation(req.session.user._id, locationId);
 
-    if (favoriteIndex === -1) {
-        return res.status(404).render('error', {
-            title: 'Favorite Not Found',
-            message: 'This location was not found in your favorites.'
-        });
-    }
-
-    mockFavorites.splice(favoriteIndex, 1);
-
-    return res.redirect('/dashboard');
+    return res.redirect(`/locations/${locationId}`);
+  } catch (e) {
+    return res.status(400).render('error', {
+      title: 'Favorite Error',
+      message: e
+    });
+  }
 });
 
-router.post('/:locationId/add', async (req, res) => {
-    const locationId = req.params.locationId;
+router.post('/:locationId/remove', requireLogin, async (req, res) => {
+  const locationId = req.params.locationId;
 
-    // Prevent duplicates
-    const alreadyExists = mockFavorites.find(
-        (loc) => loc._id === locationId
-    );
+  try {
+    await removeFavoriteLocation(req.session.user._id, locationId);
 
-    if (alreadyExists) {
-        return res.redirect('/dashboard');
-    }
-
-    // Temp mock location
-    const newFavorite = {
-        _id: locationId,
-        locationName: `Location ${locationId}`,
-        address: 'Mock Address',
-        safetyRating: 7.0
-    };
-
-    mockFavorites.push(newFavorite);
-
-    return res.redirect('/dashboard');
+    const redirectTo = req.body.redirectTo || '/dashboard';
+    return res.redirect(redirectTo);
+  } catch (e) {
+    return res.status(400).render('error', {
+      title: 'Favorite Error',
+      message: e
+    });
+  }
 });
 
 export default router;

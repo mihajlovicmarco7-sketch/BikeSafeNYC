@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import { getAllParkingLocations, getParkingLocationById, searchParkingLocationsByName, getParkingLocationsByCoordinates} from "../data/locations.js";
+import { getUserById } from '../data/users.js';
 import validation from '../helpers.js'
 
 
@@ -128,21 +129,35 @@ router
     });
 
 router
-    .route("/:id")
-    .get(async (req, res) => {
-        try {
-            const location = await getParkingLocationById(req.params.id);
-            // return res.json(locations);
-            return res.render('locations/parking_location', { 
-                location, 
-                searchTerm:req.query.searchTerm,
-                backLink: req.query.backLink ? decodeURIComponent(req.query.backLink) : '/locations/search'});
-        } catch (e) {
-            return res.status(404).render('error', {
-            title: 'Not Found',
-            message: e
-            });
-        }
-    });
+  .route("/:id")
+  .get(async (req, res) => {
+    try {
+      const location = await getParkingLocationById(req.params.id);
+
+      let isFavorited = false;
+
+      if (req.session.user) {
+        const user = await getUserById(req.session.user._id);
+
+        isFavorited = user.favoriteLocationIds?.some(
+          (favoriteId) => favoriteId.toString() === location._id.toString()
+        );
+      }
+
+      return res.render('locations/parking_location', {
+        location,
+        isFavorited,
+        searchTerm: req.query.searchTerm,
+        backLink: req.query.backLink
+          ? decodeURIComponent(req.query.backLink)
+          : '/locations/search'
+      });
+    } catch (e) {
+      return res.status(404).render('error', {
+        title: 'Not Found',
+        message: e
+      });
+    }
+  });
 
 export default router;
