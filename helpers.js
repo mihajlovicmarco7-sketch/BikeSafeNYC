@@ -67,6 +67,13 @@ const exportedMethods = {
     return str;
   },
 
+  checkNumeric(value, name) {
+      if (!value) throw `You must provide a ${name}`;
+      if (isNaN(parseFloat(value)) || !isFinite(value)) throw `${name} must be a number`;
+      
+      return value;  
+  },
+
   checkEmail(email, fieldName = 'Email') {
     email = this.checkString(email, fieldName).toLowerCase();
 
