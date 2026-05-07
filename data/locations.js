@@ -24,6 +24,37 @@ export const getParkingLocationById = async (id) => {
 
 };
 
+export const getParkingLocationsByIds = async (ids) => {
+  if (!Array.isArray(ids)) {
+    throw 'Location ids must be an array';
+  }
+
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const objectIds = ids.map((id) => {
+    const stringId = id.toString();
+
+    if (!ObjectId.isValid(stringId)) {
+      throw 'Invalid location ID in favorites';
+    }
+
+    return new ObjectId(stringId);
+  });
+
+  const parkingLocationsCollection = await parkingLocations();
+
+  const locations = await parkingLocationsCollection
+    .find({ _id: { $in: objectIds } })
+    .toArray();
+
+  return locations.map((location) => ({
+    ...location,
+    _id: location._id.toString()
+  }));
+};
+
 export const updateSafetyRating = async (id, value) => {
     try{
       id = validation.checkId(id);

@@ -99,13 +99,16 @@
   </div>
 
   {{#if hasFavorites}}
-    <div class="favorite-grid">
-      {{#each favorites}}
-        <article class="favorite-card">
-          <h3>{{locationName}}</h3>
-          <p>{{address}}</p>
-          <p><strong>Safety Rating:</strong> {{safetyRating}} / 10</p>
+  <div class="favorite-grid">
+    {{#each favorites}}
+      <article class="favorite-card">
+        <h3>{{locationName}}</h3>
+        <p>{{address}}</p>
+        <p><strong>Safety Rating:</strong> {{safetyRating}}</p>
+
+        <div class="action-row">
           <a class="btn" href="/locations/{{_id}}">View Location</a>
+
           <form
             method="POST"
             action="/favorites/{{_id}}/remove"
@@ -114,17 +117,14 @@
           >
             <button type="submit" class="btn btn-danger">Remove Favorite</button>
           </form>
-          
-          <form method="POST" action="/favorites/loc99/add">
-            <button class="btn">Add Test Favorite</button>
-          </form>
-        </article>
-      {{/each}}
-    </div>
-  {{else}}
-    <div class="empty-state">
-      <h3>No favorites yet</h3>
-      <p>You have not added any favorite parking locations yet.</p>
-    </div>
-  {{/if}}
-</section>
+        </div>
+      </article>
+    {{/each}}
+  </div>
+{{else}}
+  <div class="empty-state">
+    <h3>No favorites yet</h3>
+    <p>You have not added any favorite parking locations yet.</p>
+    <a class="btn" href="/locations">Browse Locations</a>
+  </div>
+{{/if}}

@@ -190,3 +190,51 @@ export const loginUser = async (identifier, password) => {
     role: user.role
   };
 };
+
+export const addFavoriteLocation = async (userId, locationId) => {
+  userId = checkString(userId, 'User ID');
+  locationId = checkString(locationId, 'Location ID');
+
+  if (!ObjectId.isValid(userId)) throw 'Invalid user ID';
+  if (!ObjectId.isValid(locationId)) throw 'Invalid location ID';
+
+  const usersCollection = await getUsersCollection();
+
+  const updateInfo = await usersCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    {
+      $addToSet: { favoriteLocationIds: new ObjectId(locationId) },
+      $set: { updatedAt: new Date() }
+    }
+  );
+
+  if (!updateInfo.matchedCount) {
+    throw 'Could not find user to update favorites';
+  }
+
+  return true;
+};
+
+export const removeFavoriteLocation = async (userId, locationId) => {
+  userId = checkString(userId, 'User ID');
+  locationId = checkString(locationId, 'Location ID');
+
+  if (!ObjectId.isValid(userId)) throw 'Invalid user ID';
+  if (!ObjectId.isValid(locationId)) throw 'Invalid location ID';
+
+  const usersCollection = await getUsersCollection();
+
+  const updateInfo = await usersCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    {
+      $pull: { favoriteLocationIds: new ObjectId(locationId) },
+      $set: { updatedAt: new Date() }
+    }
+  );
+
+  if (!updateInfo.matchedCount) {
+    throw 'Could not find user to update favorites';
+  }
+
+  return true;
+};

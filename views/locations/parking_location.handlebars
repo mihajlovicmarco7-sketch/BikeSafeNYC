@@ -1,44 +1,52 @@
-<h1>{{location.locationName}}</h1>
+<section class="dashboard-hero">
+  <h1>{{location.locationName}}</h1>
+  <p class="subtext">{{location.address}}</p>
+</section>
 
-<section>
+<section class="dashboard-section">
+  <article class="report-card">
     <h2>Location Details</h2>
-    <h3>Address</h3>
-    <p>{{location.address}}</p>
 
-    <h3>Borough</h3>
-    <p>{{location.borough}}</p>
-    
-    <h3>Neighborhood</h3>
-    <p>{{location.neighborhood}}</p>
-    
-    <h3>Parking Capacity</h3>
-    <p>{{location.parkingSize}}</p>
-
-    <h3>Coordinates</h3>
-    <p>Latitude: {{location.latitude}}, Longitude: {{location.longitude}}</p>
+    <p><strong>Address:</strong> {{location.address}}</p>
+    <p><strong>Borough:</strong> {{location.borough}}</p>
+    <p><strong>Neighborhood:</strong> {{location.neighborhood}}</p>
+    <p><strong>Parking Capacity:</strong> {{location.parkingSize}}</p>
+    <p><strong>Coordinates:</strong> Latitude: {{location.latitude}}, Longitude: {{location.longitude}}</p>
 
     <h2>Safety</h2>
 
-    <h3>Number of Thefts Reported by Users</h3>
-    <p>{{location.numberOfThefts}}</p>
+    <p><strong>Number of Thefts Reported by Users:</strong> {{location.numberOfThefts}}</p>
 
-    <h3>Safety Score</h3>
-    <p><span class="{{safetyClass location.safetyRating}}" style="font-size: 60px">{{safetyLetter location.safetyRating}}</span></p>
+    <p>
+      <strong>Safety Score:</strong>
+      <span class="{{safetyClass location.safetyRating}}" style="font-size: 60px">
+        {{safetyLetter location.safetyRating}}
+      </span>
+    </p>
 
-{{!-- {{#if searchTerm}}
-    <a href="/locations/search?searchTerm={{searchTerm}}">Back to results for "{{searchTerm}}"</a>
-{{else}}
-    <a href="/locations/search">Back to search</a>
-{{/if}} --}}
-<section>
-    <form method="POST" action="/theftReports/{{location._id}}" class="location-form">
-        <input type="hidden" name="locationName" value="{{location.locationName}}">
-        <input type="hidden" name="address" value="{{location.address}}">
+    <div class="action-row">
+      {{#if currentUser}}
+        {{#if isFavorited}}
+          <form method="POST" action="/favorites/{{location._id}}/remove" class="inline-form">
+            <input type="hidden" name="redirectTo" value="/locations/{{location._id}}">
+            <button type="submit" class="btn btn-danger">Remove Favorite</button>
+          </form>
+        {{else}}
+          <form method="POST" action="/favorites/{{location._id}}/add" class="inline-form">
+            <button type="submit" class="btn">Add Favorite</button>
+          </form>
+        {{/if}}
 
-        <div class="action-row">
-        <button type="submit" class="btn">Create theft report</button>
-        <a href="/dashboard" class="btn btn-secondary">Cancel</a>
-        </div>
-    </form>
+        <form method="POST" action="/theftReports/{{location._id}}" class="inline-form">
+          <input type="hidden" name="locationName" value="{{location.locationName}}">
+          <input type="hidden" name="address" value="{{location.address}}">
+          <button type="submit" class="btn btn-success">Create Theft Report</button>
+        </form>
+      {{else}}
+        <a href="/login" class="btn">Log in to favorite or report theft</a>
+      {{/if}}
+
+      <a href="{{backLink}}" class="btn btn-secondary">Back to Search Results</a>
+    </div>
+  </article>
 </section>
-<a href="{{backLink}}">Back to search results</a>
