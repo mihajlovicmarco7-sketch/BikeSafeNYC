@@ -73,7 +73,7 @@ router
         });
       }
 
-      await updateSafetyRating(locationId, 0.5);
+      await updateSafetyRating(locationId, 3);
 
       return res.redirect('/dashboard');
     } catch (e) {

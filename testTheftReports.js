@@ -182,7 +182,7 @@ async function main(){
     console.log("---------------------------------------");
 
     try {
-        result = await updateSafetyRating(locationId, 0.5);
+        result = await updateSafetyRating(locationId, 3);
         result._id = result._id.toString();
         console.dir(result, {depth: null});
     } catch (e) {

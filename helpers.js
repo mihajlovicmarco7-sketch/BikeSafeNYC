@@ -173,6 +173,34 @@ const exportedMethods = {
       latitude: parseFloat(response.data[0].lat),
       longitude: parseFloat(response.data[0].lon)
     };
+  },
+
+  isValidCoordinate(lat, long){
+    if (!lat || lat === undefined) throw 'Missing latitude';
+    if (!long || long === undefined) throw 'Missing longitude';
+
+
+    if (lat.trim().length === 0) throw 'Empty latitude';
+    if (long.trim().length === 0) throw 'Empty latitude';
+
+    if (isNaN(parseFloat(lat))) throw 'latitude must be a number';
+    if (isNaN(parseFloat(long))) throw 'longitude must be a number';
+
+    if (lat < -90 || lat > 90) throw 'Latitude must be within valid boundaries (-90 -> 90)';
+    if (long < -180 || long > 180) throw 'Longitude must be within valid boundaries (-180 -> 180)';
+
+    return [parseFloat(lat.trim()), parseFloat(long.trim())]
+  },
+
+  isValidDistance(distance){
+    if (!distance) return 0.25;
+
+    const distanceNumber = Number(distance);
+
+    if (!isFinite(distanceNumber)) throw 'Distance must be a valid number';
+    if (distanceNumber < 0) throw 'Distance must be >= 0';
+    
+    return distanceNumber;
   }
 };
 

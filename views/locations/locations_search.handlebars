@@ -3,8 +3,14 @@
 <section>
     <h2>Search by Name</h2>
     <form action="/locations/search" method="get" id="name-form">
-        <label for="search-term">Loction Name:</label>
-        <input type="text" id="search-term" name="searchTerm" placeholder="Grand Central">
+        <p>Search by keyword, examples:</p>
+        <ul>
+            <li>By street name/address (ex: Broadway, 610 Broadway)</li>
+            <li>By point of interest (ex: Prospect Park)</li>
+            <li>By bike rack type (ex: U Rack)</li>
+        </ul>
+        <label for="search-term">Location Name:</label>
+        <input type="text" id="search-term" name="searchTerm" placeholder="Broadway">
         <button type="submit">Search</button>
         <p id="name-error-container" style="color:red; display:none;"></p>
     </form>

@@ -15,7 +15,7 @@ router.get('/dashboard', requireLogin, async (req, res) => {
     const favorites = await getParkingLocationsByIds(favoriteLocationIds);
 
     return res.render('dashboard', {
-      title: 'My Dashboard',
+      title: `${req.session.user.username}'s Dashboard`,
       user: req.session.user,
       reports,
       favorites,

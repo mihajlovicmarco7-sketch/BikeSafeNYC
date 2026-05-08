@@ -31,15 +31,8 @@ router
             // Example for sorting: http://localhost:3000/locations/find?latitude=40.707&longitude=-73.973&distance=1
             // 102 S 6 ST Large Hoop is indexed earlier in the DB, but 50 DIVISION AV U Rack is closer by distance
 
-            latitude = parseFloat(latitude);
-            longitude = parseFloat(longitude);
-            distance = distance ? parseFloat(distance) : .25;
-
-            // if (!latitude || latitude === undefined) throw 'Missing latitude!';
-            if (!longitude || latitude === longitude) throw 'Missing longitude!';
-            if (!distance || distance === undefined) throw 'Missing distance!';
-
-
+            [latitude, longitude] = validation.isValidCoordinate(latitude, longitude)
+            distance = validation.isValidDistance(distance)
 
             const {latMin, latMax, longMin, longMax}  = validation.getBoundingCoordinatesForDistance(latitude, longitude, distance);
 
